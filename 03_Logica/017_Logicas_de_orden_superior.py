@@ -82,7 +82,7 @@ class MathAssistant:
 # Ejemplo de Uso Correcto
 # -------------------------------
 if __name__ == "__main__":
-    print("=== Sistema de Verificación Matemática (Versión Final Funcional) ===")
+    print("=== Sistema de Verificación Matemática ===")
     
     # Crear una instancia del asistente matemático
     ma = MathAssistant()
