@@ -54,12 +54,3 @@ if __name__ == "__main__":
     print("Tokens reconocidos:")
     for token in tokens:
         print(token)
-
-### Explicación adicional:
-1. **`TOKEN_SPEC`**: Define los patrones para los diferentes tipos de tokens que el analizador puede reconocer.
-2. **`tok_regex`**: Combina todos los patrones en una sola expresión regular para facilitar el análisis.
-3. **`lexical_analyzer`**: Función principal que analiza el código de entrada y devuelve una lista de tokens.
-4. **Manejo de errores**: Si se encuentra un carácter no reconocido, se lanza un error con un mensaje claro.
-5. **Ejemplo práctico**: Se proporciona un ejemplo de uso con el código `x = 42 + y1;`, mostrando cómo se reconocen los tokens.
-
-Este código es un ejemplo básico de un analizador léxico y puede extenderse para manejar más tipos de tokens o casos específicos.
