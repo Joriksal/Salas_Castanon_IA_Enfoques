@@ -1,5 +1,5 @@
-import random
-import math
+import random  # Importa el módulo random para la generación de números aleatorios.
+import math    # Importa el módulo math para funciones matemáticas (no se usa en el código proporcionado).
 
 class SimulatedAnnealing:
     def __init__(self, funcion_objetivo, generar_vecino, temp_inicial=1000, 
