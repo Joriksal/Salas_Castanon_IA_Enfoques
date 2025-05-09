@@ -1,6 +1,7 @@
-import numpy as np
-from itertools import product
-from collections import defaultdict
+# Importaciones necesarias
+import numpy as np  # Librería para operaciones matemáticas avanzadas.
+from itertools import product  # Para generar combinaciones de decisiones posibles.
+from collections import defaultdict  # Para crear un diccionario con valores por defecto como listas.
 
 class RedDecision:
     def __init__(self):
@@ -23,7 +24,7 @@ class RedDecision:
             tipo: Tipo del nodo ('chance', 'decision').
             kwargs: Información adicional como opciones o probabilidades.
         """
-        self.nodos[nombre] = {'tipo': tipo, **kwargs}
+        self.nodos[nombre] = {'tipo': tipo, **kwargs}  # Almacena el nodo con su tipo y atributos adicionales.
     
     def agregar_arista(self, origen, destino):
         """
@@ -33,7 +34,7 @@ class RedDecision:
             origen: Nodo padre.
             destino: Nodo hijo.
         """
-        self.grafo[origen].append(destino)
+        self.grafo[origen].append(destino)  # Añade el nodo hijo al nodo padre en el grafo.
     
     def asignar_probabilidad(self, nodo, probabilidades):
         """
@@ -43,7 +44,7 @@ class RedDecision:
             nodo: Nombre del nodo.
             probabilidades: Diccionario con las probabilidades de los valores del nodo.
         """
-        self.nodos[nodo]['probabilidades'] = probabilidades
+        self.nodos[nodo]['probabilidades'] = probabilidades  # Asocia las probabilidades al nodo.
     
     def asignar_utilidad(self, padres, tabla):
         """
@@ -53,7 +54,7 @@ class RedDecision:
             padres: Lista de nodos padres.
             tabla: Diccionario que asocia combinaciones de valores de los padres con utilidades.
         """
-        self.utilidades[tuple(padres)] = tabla
+        self.utilidades[tuple(padres)] = tabla  # Almacena la tabla de utilidad asociada a los padres.
     
     def mejor_decision(self, evidencias={}):
         """
@@ -87,7 +88,7 @@ class RedDecision:
                 mejor_utilidad = utilidad
                 mejor_combinacion = decision
         
-        return mejor_combinacion, mejor_utilidad
+        return mejor_combinacion, mejor_utilidad  # Retorna la mejor combinación y su utilidad.
     
     def _calcular_utilidad(self, estados):
         """
@@ -99,7 +100,7 @@ class RedDecision:
         Returns:
             float: Utilidad total calculada.
         """
-        utilidad = 0
+        utilidad = 0  # Inicializar la utilidad total.
         for padres, tabla in self.utilidades.items():
             # Obtener los valores de los padres según los estados actuales.
             valores = tuple(estados[p] for p in padres if p in estados)
@@ -107,7 +108,7 @@ class RedDecision:
             # Sumar la utilidad correspondiente si los valores están en la tabla.
             if valores in tabla:
                 utilidad += tabla[valores]
-        return utilidad
+        return utilidad  # Retorna la utilidad total calculada.
 
 class ValorInformacion:
     def __init__(self, red):
@@ -117,7 +118,7 @@ class ValorInformacion:
         Args:
             red: Objeto de la clase RedDecision.
         """
-        self.red = red
+        self.red = red  # Asocia la red de decisión al calculador de VOI.
     
     def calcular_voi(self, nodo_info, evidencias={}):
         """

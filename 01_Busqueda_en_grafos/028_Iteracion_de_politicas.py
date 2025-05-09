@@ -1,5 +1,4 @@
-import numpy as np
-from collections import defaultdict
+import numpy as np  # Librería para operaciones matemáticas y manejo de valores numéricos.
 
 class MDP:
     def __init__(self, estados, acciones, recompensas, transiciones, gamma=0.9):
@@ -13,10 +12,10 @@ class MDP:
             transiciones: Diccionario {(estado, accion): {estado_siguiente: probabilidad}}.
             gamma: Factor de descuento (default: 0.9), que pondera la importancia de recompensas futuras.
         """
-        self.estados = estados
-        self.acciones = acciones
-        self.recompensas = recompensas
-        self.transiciones = transiciones
+        self.estados = estados  # Lista de estados posibles.
+        self.acciones = acciones  # Lista de acciones posibles.
+        self.recompensas = recompensas  # Recompensas asociadas a transiciones.
+        self.transiciones = transiciones  # Probabilidades de transición entre estados.
         self.gamma = gamma  # Factor de descuento para recompensas futuras.
     
     def evaluar_politica(self, politica, epsilon=1e-6):
@@ -49,17 +48,18 @@ class MDP:
                 # Calcular el nuevo valor para el estado.
                 nuevo_valor = 0
                 for s_siguiente, prob in self.transiciones[(s, a)].items():
-                    recompensa = self.recompensas.get((s, a, s_siguiente), 0)
+                    recompensa = self.recompensas.get((s, a, s_siguiente), 0)  # Obtener recompensa.
+                    # Fórmula de Bellman: probabilidad * (recompensa + descuento * valor futuro).
                     nuevo_valor += prob * (recompensa + self.gamma * V[s_siguiente])
                 
-                V_nuevo[s] = nuevo_valor
+                V_nuevo[s] = nuevo_valor  # Actualizar el valor del estado.
                 delta = max(delta, abs(V_nuevo[s] - V[s]))  # Actualizar el cambio máximo.
             
             V = V_nuevo  # Actualizar los valores de los estados.
             if delta < epsilon:  # Verificar criterio de convergencia.
-                break
+                break  # Salir del bucle si los valores han convergido.
         
-        return V
+        return V  # Retornar los valores de los estados.
     
     def mejorar_politica(self, V, politica_actual):
         """
@@ -72,7 +72,7 @@ class MDP:
         Returns:
             Tuple: (nueva_politica, estable).
         """
-        nueva_politica = {}
+        nueva_politica = {}  # Diccionario para la nueva política.
         estable = True  # Indica si la política es estable (no cambia).
         
         for s in self.estados:
@@ -82,7 +82,7 @@ class MDP:
             
             # Encontrar la mejor acción para este estado.
             mejor_accion = None
-            mejor_valor = -np.inf
+            mejor_valor = -np.inf  # Inicializar con un valor muy bajo.
             
             for a in self.acciones:
                 if (s, a) not in self.transiciones:
@@ -91,7 +91,7 @@ class MDP:
                 # Calcular el valor esperado para esta acción.
                 valor_accion = 0
                 for s_siguiente, prob in self.transiciones[(s, a)].items():
-                    recompensa = self.recompensas.get((s, a, s_siguiente), 0)
+                    recompensa = self.recompensas.get((s, a, s_siguiente), 0)  # Obtener recompensa.
                     valor_accion += prob * (recompensa + self.gamma * V[s_siguiente])
                 
                 # Actualizar la mejor acción si el valor es mayor.
@@ -99,11 +99,11 @@ class MDP:
                     mejor_valor = valor_accion
                     mejor_accion = a
             
-            nueva_politica[s] = mejor_accion
+            nueva_politica[s] = mejor_accion  # Asignar la mejor acción al estado.
             if politica_actual.get(s) != mejor_accion:
                 estable = False  # La política no es estable si cambia alguna acción.
         
-        return nueva_politica, estable
+        return nueva_politica, estable  # Retornar la nueva política y si es estable.
     
     def iteracion_politicas(self, politica_inicial=None, max_iter=100):
         """
@@ -139,7 +139,7 @@ class MDP:
         else:
             print("Advertencia: Máximo de iteraciones alcanzado")
         
-        return politica, V
+        return politica, V  # Retornar la política óptima y los valores óptimos.
 
 # --------------------------------------------
 # Ejemplo: Problema del Robot Limpiador

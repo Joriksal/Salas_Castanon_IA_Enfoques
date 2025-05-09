@@ -1,5 +1,4 @@
-import numpy as np
-from itertools import product
+from itertools import product  # Importa una función para generar combinaciones de valores.
 
 class Nodo:
     def __init__(self, nombre, tipo, valores=None, padres=None):
@@ -12,17 +11,17 @@ class Nodo:
             valores: Posibles valores del nodo (solo para nodos de tipo 'chance' o 'decision').
             padres: Lista de nodos padres (opcional, para dependencias).
         """
-        self.nombre = nombre
-        self.tipo = tipo
-        self.valores = valores if valores is not None else []
-        self.padres = padres if padres is not None else []
+        self.nombre = nombre  # Nombre del nodo.
+        self.tipo = tipo  # Tipo del nodo: 'chance', 'decision' o 'utilidad'.
+        self.valores = valores if valores is not None else []  # Valores posibles del nodo.
+        self.padres = padres if padres is not None else []  # Nodos padres del nodo actual.
         self.tabla = None  # Tabla de probabilidad o utilidad asociada al nodo.
         
     def __repr__(self):
         """
         Representación del nodo para depuración.
         """
-        return f"{self.tipo.upper()}({self.nombre})"
+        return f"{self.tipo.upper()}({self.nombre})"  # Devuelve el tipo y nombre del nodo.
 
 class RedDecision:
     def __init__(self):
@@ -36,11 +35,14 @@ class RedDecision:
     def agregar_nodo(self, nodo):
         """
         Agrega un nodo a la red.
+        
+        Args:
+            nodo: Nodo a agregar.
         """
-        self.nodos.append(nodo)
-        if nodo.tipo == 'decision':
+        self.nodos.append(nodo)  # Añade el nodo a la lista general.
+        if nodo.tipo == 'decision':  # Si el nodo es de tipo 'decision', lo añade a la lista correspondiente.
             self.nodos_decision.append(nodo)
-        elif nodo.tipo == 'utilidad':
+        elif nodo.tipo == 'utilidad':  # Si el nodo es de tipo 'utilidad', lo añade a la lista correspondiente.
             self.nodos_utilidad.append(nodo)
     
     def agregar_tabla_probabilidad(self, nodo, tabla):
@@ -51,9 +53,9 @@ class RedDecision:
             nodo: Nodo al que se asignará la tabla.
             tabla: Diccionario con las probabilidades.
         """
-        if nodo.tipo != 'chance':
+        if nodo.tipo != 'chance':  # Verifica que el nodo sea de tipo 'chance'.
             raise ValueError("Solo nodos de tipo 'chance' pueden tener tabla de probabilidad.")
-        nodo.tabla = tabla
+        nodo.tabla = tabla  # Asigna la tabla de probabilidad al nodo.
     
     def agregar_tabla_utilidad(self, nodo, tabla):
         """
@@ -63,9 +65,9 @@ class RedDecision:
             nodo: Nodo al que se asignará la tabla.
             tabla: Diccionario con las utilidades.
         """
-        if nodo.tipo != 'utilidad':
+        if nodo.tipo != 'utilidad':  # Verifica que el nodo sea de tipo 'utilidad'.
             raise ValueError("Solo nodos de tipo 'utilidad' pueden tener tabla de utilidad.")
-        nodo.tabla = tabla
+        nodo.tabla = tabla  # Asigna la tabla de utilidad al nodo.
     
     def posibles_combinaciones(self, nodos):
         """
@@ -77,8 +79,8 @@ class RedDecision:
         Returns:
             list: Lista de combinaciones posibles.
         """
-        valores = [nodo.valores for nodo in nodos]
-        return list(product(*valores))
+        valores = [nodo.valores for nodo in nodos]  # Obtiene los valores posibles de cada nodo.
+        return list(product(*valores))  # Genera todas las combinaciones posibles usando 'product'.
     
     def evaluar_decision(self, decision, evidencias={}):
         """
@@ -91,24 +93,17 @@ class RedDecision:
         Returns:
             float: Utilidad total esperada para la decisión.
         """
-        # Combinar decisión con evidencias observadas.
-        observado = {**evidencias, **decision}
+        observado = {**evidencias, **decision}  # Combina las evidencias con la decisión.
+        utilidad_total = 0  # Inicializa la utilidad total en 0.
         
-        utilidad_total = 0
-        
-        # Calcular la utilidad esperada.
-        for nodo_utilidad in self.nodos_utilidad:
-            # Obtener los padres del nodo de utilidad.
-            padres = nodo_utilidad.padres
+        for nodo_utilidad in self.nodos_utilidad:  # Itera sobre los nodos de utilidad.
+            padres = nodo_utilidad.padres  # Obtiene los padres del nodo de utilidad.
+            valores_padres = tuple(observado.get(p.nombre, None) for p in padres)  # Obtiene los valores de los padres.
             
-            # Obtener los valores de los padres según las evidencias y decisiones.
-            valores_padres = tuple(observado.get(p.nombre, None) for p in padres)
-            
-            # Sumar la utilidad correspondiente si los valores están en la tabla.
-            if valores_padres in nodo_utilidad.tabla:
-                utilidad_total += nodo_utilidad.tabla[valores_padres]
+            if valores_padres in nodo_utilidad.tabla:  # Verifica si los valores están en la tabla.
+                utilidad_total += nodo_utilidad.tabla[valores_padres]  # Suma la utilidad correspondiente.
         
-        return utilidad_total
+        return utilidad_total  # Devuelve la utilidad total.
     
     def mejor_decision(self, evidencias={}):
         """
@@ -120,25 +115,20 @@ class RedDecision:
         Returns:
             tuple: (mejor_decisión, utilidad_esperada).
         """
-        mejor_utilidad = -float('inf')  # Inicializar con un valor muy bajo.
-        mejor_decision = None
+        mejor_utilidad = -float('inf')  # Inicializa con un valor muy bajo.
+        mejor_decision = None  # Inicializa la mejor decisión como None.
         
-        # Generar todas las combinaciones posibles de decisiones.
-        decisiones_posibles = self.posibles_combinaciones(self.nodos_decision)
+        decisiones_posibles = self.posibles_combinaciones(self.nodos_decision)  # Genera todas las combinaciones posibles.
         
-        for decision_combo in decisiones_posibles:
-            # Crear un diccionario con la combinación actual de decisiones.
-            decision = {d.nombre: val for d, val in zip(self.nodos_decision, decision_combo)}
+        for decision_combo in decisiones_posibles:  # Itera sobre cada combinación de decisiones.
+            decision = {d.nombre: val for d, val in zip(self.nodos_decision, decision_combo)}  # Crea un diccionario con la combinación actual.
+            utilidad = self.evaluar_decision(decision, evidencias)  # Evalúa la utilidad de esta decisión.
             
-            # Evaluar la utilidad de esta decisión.
-            utilidad = self.evaluar_decision(decision, evidencias)
-            
-            # Actualizar la mejor decisión si la utilidad es mayor.
-            if utilidad > mejor_utilidad:
+            if utilidad > mejor_utilidad:  # Actualiza la mejor decisión si la utilidad es mayor.
                 mejor_utilidad = utilidad
                 mejor_decision = decision
         
-        return mejor_decision, mejor_utilidad
+        return mejor_decision, mejor_utilidad  # Devuelve la mejor decisión y su utilidad.
 
 # Ejemplo: Problema del paraguas
 def ejemplo_paraguas():
@@ -148,8 +138,7 @@ def ejemplo_paraguas():
     Returns:
         RedDecision: Red de decisión configurada.
     """
-    # Crear la red de decisión.
-    red = RedDecision()
+    red = RedDecision()  # Crear la red de decisión.
     
     # Nodos chance (aleatorios).
     clima = Nodo('Clima', 'chance', ['soleado', 'lluvioso'])

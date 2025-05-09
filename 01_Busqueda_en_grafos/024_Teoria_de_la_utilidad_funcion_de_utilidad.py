@@ -1,6 +1,3 @@
-import numpy as np
-from collections import defaultdict
-
 class AgenteUtilidad:
     def __init__(self, opciones, funcion_utilidad=None):
         """
@@ -10,11 +7,12 @@ class AgenteUtilidad:
             opciones: Diccionario de opciones con sus atributos.
             funcion_utilidad: Función personalizada para calcular utilidad (opcional).
         """
-        self.opciones = opciones
+        self.opciones = opciones  # Almacena las opciones disponibles.
         # Si no se proporciona una función de utilidad personalizada, usa la predeterminada.
         self.funcion_utilidad = funcion_utilidad or self.funcion_utilidad_default
         
-        # Pesos para los atributos (pueden ajustarse según la importancia de cada atributo).
+        # Diccionario de pesos para los atributos. Los pesos determinan la importancia relativa
+        # de cada atributo en el cálculo de la utilidad.
         self.pesos = {
             'beneficio': 0.6,  # Peso positivo porque se busca maximizar el beneficio.
             'costo': -0.3,     # Peso negativo porque se busca minimizar el costo.
@@ -31,12 +29,12 @@ class AgenteUtilidad:
         Returns:
             float: Valor de la utilidad calculada.
         """
-        utilidad = 0
-        # Suma ponderada de los atributos según los pesos definidos.
+        utilidad = 0  # Inicializa la utilidad en 0.
+        # Itera sobre los atributos de la opción y calcula la suma ponderada.
         for atributo, valor in opcion.items():
-            if atributo in self.pesos:
-                utilidad += self.pesos[atributo] * valor
-        return utilidad
+            if atributo in self.pesos:  # Verifica si el atributo tiene un peso definido.
+                utilidad += self.pesos[atributo] * valor  # Suma el producto del peso y el valor.
+        return utilidad  # Devuelve la utilidad calculada.
     
     def evaluar_opciones(self):
         """
@@ -45,7 +43,7 @@ class AgenteUtilidad:
         Returns:
             dict: Diccionario {nombre_opcion: utilidad}.
         """
-        # Calcula la utilidad de cada opción usando la función de utilidad.
+        # Usa un diccionario por comprensión para calcular la utilidad de cada opción.
         return {nombre: self.funcion_utilidad(attrs) for nombre, attrs in self.opciones.items()}
     
     def mejor_opcion(self):
@@ -55,8 +53,8 @@ class AgenteUtilidad:
         Returns:
             tuple: (nombre_opcion, utilidad).
         """
-        utilidades = self.evaluar_opciones()
-        # Encuentra la opción con la mayor utilidad.
+        utilidades = self.evaluar_opciones()  # Calcula las utilidades de todas las opciones.
+        # Encuentra la opción con la mayor utilidad usando la función max.
         return max(utilidades.items(), key=lambda x: x[1])
     
     def grafo_decision(self):
@@ -66,17 +64,17 @@ class AgenteUtilidad:
         Returns:
             dict: Grafo representado como un diccionario {origen: {destino: utilidad}}.
         """
-        grafo = defaultdict(dict)
-        utilidades = self.evaluar_opciones()
+        grafo = {}  # Inicializa el grafo como un diccionario vacío.
+        utilidades = self.evaluar_opciones()  # Calcula las utilidades de todas las opciones.
         
         # Nodo inicial "Inicio" conectado a cada opción con su utilidad.
         for opcion, attrs in self.opciones.items():
-            grafo['Inicio'][opcion] = utilidades[opcion]
+            grafo.setdefault('Inicio', {})[opcion] = utilidades[opcion]
             
             # Aquí podríamos agregar más nodos para decisiones secuenciales.
             # Por simplicidad, mostramos solo la primera decisión.
             
-        return grafo
+        return grafo  # Devuelve el grafo de decisiones.
 
 # --------------------------------------------
 # Ejemplo de uso: Decisión de inversión

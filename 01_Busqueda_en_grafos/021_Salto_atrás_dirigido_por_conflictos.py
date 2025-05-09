@@ -8,12 +8,16 @@ class CBJ:
             dominios: Diccionario {variable: lista de valores posibles}.
             restricciones: Diccionario {(var1, var2): función} que define las restricciones entre variables.
         """
+        # Almacena las variables del problema.
         self.variables = variables
-        self.dominios = {var: list(dominios[var]) for var in variables}  # Copia de los dominios.
+        # Crea una copia de los dominios para evitar modificar los originales.
+        self.dominios = {var: list(dominios[var]) for var in variables}
+        # Almacena las restricciones entre variables.
         self.restricciones = restricciones
-        self.vecinos = {v: [] for v in variables}  # Diccionario para almacenar los vecinos de cada variable.
+        # Diccionario para almacenar los vecinos de cada variable (variables relacionadas por restricciones).
+        self.vecinos = {v: [] for v in variables}
         
-        # Construir lista de vecinos para cada variable según las restricciones.
+        # Construir la lista de vecinos para cada variable según las restricciones.
         for (var1, var2) in restricciones:
             self.vecinos[var1].append(var2)
             self.vecinos[var2].append(var1)
@@ -29,12 +33,15 @@ class CBJ:
         Returns:
             bool: True si son consistentes, False en caso contrario.
         """
+        # Verifica si existe una restricción entre var1 y var2 y si se cumple.
         if (var1, var2) in self.restricciones:
             if not self.restricciones[(var1, var2)](val1, val2):
                 return False
+        # Verifica si existe una restricción inversa entre var2 y var1 y si se cumple.
         if (var2, var1) in self.restricciones:
             if not self.restricciones[(var2, var1)](val2, val1):
                 return False
+        # Si no hay conflictos, los valores son consistentes.
         return True
     
     def resolver(self):
@@ -44,9 +51,12 @@ class CBJ:
         Returns:
             dict: Asignación completa si se encuentra solución, None en caso contrario.
         """
-        resultado = self._cbj({}, 0, {})  # Inicia la búsqueda desde el nivel 0.
-        if isinstance(resultado, tuple):  # Si el resultado es un salto atrás, no hay solución.
+        # Llama a la función recursiva _cbj con una asignación vacía, nivel inicial 0 y sin conflictos previos.
+        resultado = self._cbj({}, 0, {})
+        # Si el resultado es un salto atrás (tupla), no hay solución.
+        if isinstance(resultado, tuple):
             return None
+        # Devuelve la asignación completa si se encuentra solución.
         return resultado
     
     def _cbj(self, asignacion, nivel, conflictos_previos):
@@ -65,19 +75,21 @@ class CBJ:
         if len(asignacion) == len(self.variables):
             return asignacion
         
-        var = self.variables[nivel]  # Seleccionar la variable correspondiente al nivel actual.
-        conflict_set = set()  # Conjunto de variables en conflicto.
+        # Seleccionar la variable correspondiente al nivel actual.
+        var = self.variables[nivel]
+        # Inicializar un conjunto para rastrear las variables en conflicto.
+        conflict_set = set()
         
         # Probar cada valor del dominio de la variable seleccionada.
         for valor in self.dominios[var]:
-            es_consistente = True
+            es_consistente = True  # Bandera para verificar consistencia.
             current_conflicts = set()  # Variables en conflicto con el valor actual.
             
             # Verificar consistencia con las variables vecinas ya asignadas.
             for vecino in self.vecinos[var]:
-                if vecino in asignacion:
+                if vecino in asignacion:  # Solo verificar vecinos ya asignados.
                     if not self.consistente(var, valor, vecino, asignacion[vecino]):
-                        current_conflicts.add(vecino)
+                        current_conflicts.add(vecino)  # Registrar conflicto.
                         es_consistente = False
             
             if es_consistente:
@@ -86,6 +98,7 @@ class CBJ:
                 nueva_asignacion[var] = valor
                 nuevos_conflictos = conflictos_previos.copy()
                 
+                # Llamada recursiva al siguiente nivel.
                 resultado = self._cbj(nueva_asignacion, nivel + 1, nuevos_conflictos)
                 if resultado is not None and not isinstance(resultado, tuple):
                     return resultado  # Solución encontrada.
@@ -101,9 +114,11 @@ class CBJ:
                     niveles_conflicto.append(self.variables.index(v))
             
             if niveles_conflicto:
-                return None, max(niveles_conflicto)  # Indica salto atrás al nivel más alto de conflicto.
+                # Retornar un salto atrás al nivel más alto de conflicto.
+                return None, max(niveles_conflicto)
         
-        return None  # No hay solución en este nivel.
+        # Si no hay solución en este nivel, retornar None.
+        return None
 
 # --------------------------------------------
 # Ejemplo: Problema de las 4 Reinas con CBJ

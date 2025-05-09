@@ -1,186 +1,191 @@
-import numpy as np
-from collections import defaultdict
+# Importa defaultdict para crear diccionarios con valores por defecto
+from collections import defaultdict  
 
 class MDP:
+    """Clase que implementa un Proceso de Decisión de Markov (MDP)"""
+    
     def __init__(self, estados, acciones, transiciones, recompensas, gamma=0.95):
         """
-        Inicializa un Proceso de Decisión de Markov (MDP).
+        Inicializa el MDP con sus componentes esenciales.
         
         Args:
-            estados: Lista de estados posibles.
-            acciones: Lista de acciones posibles.
-            transiciones: Diccionario {(estado, accion): {estado_siguiente: probabilidad}}.
-            recompensas: Diccionario {(estado, accion, estado_siguiente): recompensa}.
-            gamma: Factor de descuento (default: 0.95), que pondera la importancia de recompensas futuras.
+            estados: Lista de identificadores de estados (ej. [0, 1, 2])
+            acciones: Lista de acciones posibles (ej. ['arriba', 'abajo'])
+            transiciones: Diccionario de probabilidades de transición
+            recompensas: Diccionario que mapea transiciones a recompensas
+            gamma: Factor de descuento para recompensas futuras (0.95 por defecto)
         """
-        self.estados = estados
-        self.acciones = acciones
-        self.transiciones = transiciones
-        self.recompensas = recompensas
-        self.gamma = gamma  # Factor de descuento para recompensas futuras.
-        self.grafo = self._construir_grafo()  # Construir representación del grafo del MDP.
+        # Almacena los parámetros como atributos de la clase
+        self.estados = estados  
+        self.acciones = acciones  
+        self.transiciones = transiciones  
+        self.recompensas = recompensas  
+        self.gamma = gamma  
+        # Construye la representación interna del grafo
+        self.grafo = self._construir_grafo()  
 
     def _construir_grafo(self):
-        """
-        Construye una representación del grafo del MDP.
+        """Construye una representación gráfica del MDP para visualización"""
+        # defaultdict crea automáticamente entradas para nuevas claves
+        grafo = defaultdict(dict)  
         
-        Returns:
-            dict: Grafo que conecta estados y acciones con sus transiciones.
-        """
-        grafo = defaultdict(dict)
-        for (s, a), destinos in self.transiciones.items():
-            for s_prime, prob in destinos.items():
-                grafo[(s, a)][s_prime] = {
-                    'probabilidad': prob,
-                    'recompensa': self.recompensas.get((s, a, s_prime), 0)
+        # Itera sobre todas las transiciones definidas
+        for (estado_actual, accion), destinos in self.transiciones.items():
+            for estado_siguiente, probabilidad in destinos.items():
+                # Almacena la probabilidad y recompensa para cada transición
+                grafo[(estado_actual, accion)][estado_siguiente] = {
+                    'probabilidad': probabilidad,
+                    # Usa get() para evitar KeyError, devuelve 0 si no existe
+                    'recompensa': self.recompensas.get((estado_actual, accion, estado_siguiente), 0)  
                 }
         return grafo
 
     def iteracion_valores(self, epsilon=1e-6, max_iter=1000):
         """
-        Algoritmo de Iteración de Valores para resolver el MDP.
+        Implementa el algoritmo de Iteración de Valores para resolver el MDP.
         
         Args:
-            epsilon: Criterio de convergencia (default: 1e-6).
-            max_iter: Máximo número de iteraciones (default: 1000).
+            epsilon: Umbral de convergencia (diferencia mínima entre iteraciones)
+            max_iter: Número máximo de iteraciones permitidas
             
         Returns:
-            tuple: (valores óptimos, política óptima).
+            tuple: (valores_optimos, politica_optima)
         """
-        # Inicializar los valores de todos los estados en 0.
-        V = {s: 0 for s in self.estados}
+        # Paso 1: Inicialización - Valores a 0 para todos los estados
+        valores = {estado: 0 for estado in self.estados}  
         
-        for _ in range(max_iter):
-            delta = 0  # Diferencia máxima entre valores antiguos y nuevos.
-            V_nuevo = V.copy()  # Copia de los valores actuales para actualizarlos.
+        for _ in range(max_iter):  # Loop principal del algoritmo
+            delta = 0  # Para rastrear el mayor cambio en esta iteración
+            nuevos_valores = valores.copy()  # Copia para actualización simultánea
             
-            # Iterar sobre todos los estados.
-            for s in self.estados:
-                # Si el estado no tiene transiciones, es terminal.
-                if s not in [key[0] for key in self.transiciones.keys()]:
+            for estado in self.estados:  # Paso 2: Actualización de valores
+                # Saltar estados terminales (sin transiciones salientes)
+                if estado not in [s for (s, a) in self.transiciones.keys()]:
                     continue
                 
-                Q = {}  # Diccionario para almacenar los valores Q(s, a).
-                for a in self.acciones:
-                    # Si no hay transiciones definidas para esta acción, saltar.
-                    if (s, a) not in self.transiciones:
-                        continue
-                        
-                    # Calcular el valor esperado para esta acción.
-                    q_val = 0
-                    for s_prime, prob in self.transiciones[(s, a)].items():
-                        r = self.recompensas.get((s, a, s_prime), 0)  # Recompensa inmediata.
-                        q_val += prob * (r + self.gamma * V[s_prime])  # Valor esperado.
-                    Q[a] = q_val  # Guardar el valor Q(s, a).
+                # Diccionario para almacenar valores Q(s,a)
+                valores_accion = {}  
                 
-                # Actualizar el valor del estado con el máximo Q(s, a).
-                if Q:
-                    V_nuevo[s] = max(Q.values())
-                    delta = max(delta, abs(V_nuevo[s] - V[s]))  # Actualizar el cambio máximo.
+                for accion in self.acciones:  # Calcula Q(s,a) para cada acción
+                    if (estado, accion) not in self.transiciones:
+                        continue  # Saltar acciones no definidas
+                        
+                    # Inicializa el valor Q para esta acción
+                    valor_q = 0  
+                    
+                    # Calcula el valor esperado usando la ecuación de Bellman
+                    for estado_sig, prob in self.transiciones[(estado, accion)].items():
+                        recompensa = self.recompensas.get((estado, accion, estado_sig), 0)
+                        valor_q += prob * (recompensa + self.gamma * valores[estado_sig])
+                    
+                    valores_accion[accion] = valor_q  # Almacena Q(s,a)
+                
+                # Actualiza V(s) con el máximo Q(s,a) si hay acciones válidas
+                if valores_accion:
+                    nuevos_valores[estado] = max(valores_accion.values())
+                    # Actualiza delta con el mayor cambio absoluto
+                    delta = max(delta, abs(nuevos_valores[estado] - valores[estado]))  
             
-            V = V_nuevo  # Actualizar los valores de los estados.
-            if delta < epsilon:  # Verificar criterio de convergencia.
+            valores = nuevos_valores  # Actualiza los valores para la siguiente iteración
+            
+            # Criterio de convergencia: si el cambio máximo es menor que epsilon
+            if delta < epsilon:  
                 break
-        
-        # Extraer la política óptima.
+
+        # Paso 3: Extraer política óptima
         politica = {}
-        for s in self.estados:
-            # Si el estado no tiene transiciones, no hay acción óptima.
-            if s not in [key[0] for key in self.transiciones.keys()]:
-                politica[s] = None
+        
+        for estado in self.estados:
+            # Estados terminales no tienen acción asociada
+            if estado not in [s for (s, a) in self.transiciones.keys()]:
+                politica[estado] = None
                 continue
                 
-            Q = {}  # Diccionario para almacenar los valores Q(s, a).
-            for a in self.acciones:
-                if (s, a) not in self.transiciones:
+            valores_accion = {}  # Nuevamente calculamos Q(s,a) para cada acción
+            
+            for accion in self.acciones:
+                if (estado, accion) not in self.transiciones:
                     continue
                     
-                # Calcular el valor esperado para esta acción.
-                q_val = 0
-                for s_prime, prob in self.transiciones[(s, a)].items():
-                    r = self.recompensas.get((s, a, s_prime), 0)
-                    q_val += prob * (r + self.gamma * V[s_prime])
-                Q[a] = q_val
+                valor_q = 0
+                for estado_sig, prob in self.transiciones[(estado, accion)].items():
+                    recompensa = self.recompensas.get((estado, accion, estado_sig), 0)
+                    valor_q += prob * (recompensa + self.gamma * valores[estado_sig])
+                
+                valores_accion[accion] = valor_q
             
-            # Seleccionar la acción con el mayor valor Q(s, a).
-            politica[s] = max(Q, key=Q.get) if Q else None
+            # La política es la acción con máximo Q(s,a)
+            politica[estado] = max(valores_accion, key=valores_accion.get) if valores_accion else None
         
-        return V, politica
+        return valores, politica
 
     def visualizar_grafo(self):
-        """
-        Visualización básica del grafo del MDP.
-        """
+        """Muestra una representación legible del grafo de transiciones"""
         print("\nGrafo del MDP (Estado, Acción) -> [Destinos]:")
-        for (s, a), destinos in self.grafo.items():
-            print(f"\nDesde ({s}, {a}):")
-            for s_prime, datos in destinos.items():
-                print(f"  → {s_prime} [P={datos['probabilidad']:.2f}, R={datos['recompensa']}]")
+        for (estado, accion), destinos in self.grafo.items():
+            print(f"\nDesde ({estado}, {accion}):")
+            for estado_sig, datos in destinos.items():
+                print(f"  → {estado_sig} [Probabilidad={datos['probabilidad']:.2f}, Recompensa={datos['recompensa']}]")
 
-# --------------------------------------------
-# Ejemplo: Problema del Inventario
-# --------------------------------------------
+# Función de ejemplo: Problema de gestión de inventario
 def ejemplo_inventario():
     """
-    Define y resuelve un problema de inventario usando Iteración de Valores.
+    Configura y resuelve un MDP para un problema simple de gestión de inventario.
     
     Returns:
-        tuple: (MDP, valores óptimos, política óptima).
+        tuple: (instancia_mdp, valores_optimos, politica_optima)
     """
-    # Estados: Nivel de inventario (0-2 unidades).
-    estados = [0, 1, 2]
+    # Definición de estados (niveles de inventario)
+    estados = [0, 1, 2]  
     
-    # Acciones: Pedir 0, 1 o 2 unidades.
-    acciones = [0, 1, 2]
+    # Acciones posibles (unidades a pedir)
+    acciones = [0, 1, 2]  
     
-    # Dinámica de transiciones.
+    # Probabilidades de transición (dinámica del sistema)
     transiciones = {
-        # (estado_actual, accion): {estado_siguiente: probabilidad}.
         (0, 0): {0: 0.5, 1: 0.3, 2: 0.2},
         (0, 1): {1: 0.5, 2: 0.3, 0: 0.2},
         (0, 2): {2: 0.5, 1: 0.3, 0: 0.2},
-        
         (1, 0): {0: 0.6, 1: 0.3, 2: 0.1},
         (1, 1): {1: 0.6, 2: 0.3, 0: 0.1},
         (1, 2): {2: 0.6, 1: 0.3, 0: 0.1},
-        
         (2, 0): {1: 0.7, 2: 0.2, 0: 0.1},
         (2, 1): {2: 0.7, 1: 0.2, 0: 0.1},
         (2, 2): {2: 0.8, 1: 0.1, 0: 0.1}
     }
     
-    # Función de recompensa.
+    # Función de recompensa (costos/beneficios)
     recompensas = {
-        # (estado, accion, estado_siguiente): recompensa.
-        (0, 0, 0): -10,  # Costo por falta de inventario.
-        (0, 1, 1): -2,   # Costo de almacenamiento.
+        (0, 0, 0): -10,  # Costo por falta de stock
+        (0, 1, 1): -2,   # Costo de almacenamiento
         (0, 2, 2): -4,
-        (1, 0, 0): 5,     # Beneficio por venta.
+        (1, 0, 0): 5,    # Beneficio por venta
         (1, 1, 1): 3,
         (2, 0, 1): 8,
         (2, 2, 2): 2
     }
     
-    # Crear el MDP.
-    mdp_inventario = MDP(estados, acciones, transiciones, recompensas, gamma=0.9)
+    # Crear instancia del MDP con gamma=0.9
+    mdp = MDP(estados, acciones, transiciones, recompensas, gamma=0.9)
     
-    # Visualizar estructura del grafo.
-    mdp_inventario.visualizar_grafo()
+    # Mostrar la estructura del grafo
+    mdp.visualizar_grafo()
     
-    # Resolver con Iteración de Valores.
-    valores, politica = mdp_inventario.iteracion_valores()
+    # Resolver el MDP usando Iteración de Valores
+    valores, politica = mdp.iteracion_valores()
     
-    # Mostrar resultados.
-    print("\nValores óptimos:")
-    for s in estados:
-        print(f"Estado {s}: {valores[s]:.2f}")
+    # Mostrar resultados
+    print("\nValores óptimos por estado:")
+    for estado in estados:
+        print(f"Estado {estado}: {valores[estado]:.2f}")
     
     print("\nPolítica óptima:")
-    for s in estados:
-        print(f"En estado {s}: pedir {politica[s]} unidades")
+    for estado in estados:
+        print(f"En estado {estado}: pedir {politica[estado]} unidades")
     
-    return mdp_inventario, valores, politica
+    return mdp, valores, politica
 
+# Punto de entrada principal
 if __name__ == "__main__":
-    # Ejecutar el ejemplo del inventario.
+    # Ejecutar el ejemplo cuando se corre el script directamente
     ejemplo_inventario()
