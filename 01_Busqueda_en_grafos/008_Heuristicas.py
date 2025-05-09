@@ -1,61 +1,56 @@
-import heapq
-from math import sqrt
+import heapq # Importa la biblioteca heapq para implementar una cola de prioridad (min-heap).
+from math import sqrt  # Importa la función sqrt para calcular raíces cuadradas (usada en heurística euclidiana).
 
 class BusquedaInformada:
     def __init__(self, grafo, coordenadas=None):
         """
-        Inicializa el buscador con:
-        - grafo: Diccionario de listas de adyacencia que representa el grafo.
-        - coordenadas: Diccionario con posiciones (x, y) de los nodos para calcular heurísticas geométricas.
+        Constructor de la clase.
+        - Inicializa el grafo y las coordenadas de los nodos.
+        - Si no se proporcionan coordenadas, se inicializa como un diccionario vacío.
         """
-        self.grafo = grafo
-        self.coordenadas = coordenadas if coordenadas else {}
+        self.grafo = grafo  # Diccionario que representa el grafo como listas de adyacencia.
+        self.coordenadas = coordenadas if coordenadas else {}  # Diccionario con posiciones (x, y) de los nodos.
 
     def heuristica_euclidiana(self, actual, objetivo):
         """
-        Calcula la distancia euclidiana (rectilínea) entre dos nodos.
-        Args:
-            actual: Nodo actual.
-            objetivo: Nodo objetivo.
-        Returns:
-            Distancia euclidiana entre los nodos.
+        Calcula la distancia euclidiana entre dos nodos.
+        - Fórmula: sqrt((x2 - x1)^2 + (y2 - y1)^2).
+        - Se usa para estimar la distancia en línea recta entre dos puntos.
         """
-        x1, y1 = self.coordenadas[actual]
-        x2, y2 = self.coordenadas[objetivo]
-        return sqrt((x1 - x2)**2 + (y1 - y2)**2)
+        x1, y1 = self.coordenadas[actual]  # Coordenadas del nodo actual.
+        x2, y2 = self.coordenadas[objetivo]  # Coordenadas del nodo objetivo.
+        return sqrt((x1 - x2)**2 + (y1 - y2)**2)  # Retorna la distancia euclidiana.
 
     def heuristica_manhattan(self, actual, objetivo):
         """
-        Calcula la distancia Manhattan (suma de diferencias absolutas) entre dos nodos.
-        Args:
-            actual: Nodo actual.
-            objetivo: Nodo objetivo.
-        Returns:
-            Distancia Manhattan entre los nodos.
+        Calcula la distancia Manhattan entre dos nodos.
+        - Fórmula: |x2 - x1| + |y2 - y1|.
+        - Se usa para estimar la distancia en un entorno con movimientos en cuadrícula.
         """
-        x1, y1 = self.coordenadas[actual]
-        x2, y2 = self.coordenadas[objetivo]
-        return abs(x1 - x2) + abs(y1 - y2)
+        x1, y1 = self.coordenadas[actual]  # Coordenadas del nodo actual.
+        x2, y2 = self.coordenadas[objetivo]  # Coordenadas del nodo objetivo.
+        return abs(x1 - x2) + abs(y1 - y2)  # Retorna la distancia Manhattan.
 
     def a_estrella(self, inicio, objetivo, costos, tipo_heuristica='euclidiana'):
         """
-        Implementación del algoritmo A* (A estrella).
-        Combina el costo acumulado (g) y una heurística (h) para encontrar el camino más corto.
+        Implementa el algoritmo A* (A estrella).
+        - Combina el costo acumulado (g) y una heurística (h) para encontrar el camino más corto.
+        - Usa una cola de prioridad para explorar los nodos con menor costo total f = g + h.
         
         Args:
-            inicio: Nodo inicial.
-            objetivo: Nodo objetivo.
-            costos: Diccionario de costos entre aristas.
+            inicio: Nodo inicial del camino.
+            objetivo: Nodo objetivo al que se quiere llegar.
+            costos: Diccionario con los costos de las aristas entre nodos.
             tipo_heuristica: Tipo de heurística a usar ('euclidiana' o 'manhattan').
         
         Returns:
-            tuple: (camino, costo_total, nodos_expandidos)
+            tuple: (camino, costo_total, nodos_expandidos).
         """
         # Selección de la heurística según el tipo especificado.
         if tipo_heuristica == 'euclidiana':
-            heuristica = self.heuristica_euclidiana
+            heuristica = self.heuristica_euclidiana  # Usa la heurística euclidiana.
         else:
-            heuristica = self.heuristica_manhattan
+            heuristica = self.heuristica_manhattan  # Usa la heurística Manhattan.
 
         # Cola de prioridad para explorar los nodos con menor costo f = g + h.
         cola_prioridad = []
@@ -104,22 +99,22 @@ class BusquedaInformada:
 if __name__ == "__main__":
     # Coordenadas de las ciudades (nodos) en un plano 2D.
     coordenadas_ciudades = {
-        'A': (0, 0),
-        'B': (2, 0),
-        'C': (4, 3),
-        'D': (2, 3),
-        'E': (5, 0),
-        'F': (6, 4)
+        'A': (0, 0),  # Nodo A en (0, 0).
+        'B': (2, 0),  # Nodo B en (2, 0).
+        'C': (4, 3),  # Nodo C en (4, 3).
+        'D': (2, 3),  # Nodo D en (2, 3).
+        'E': (5, 0),  # Nodo E en (5, 0).
+        'F': (6, 4)   # Nodo F en (6, 4).
     }
 
     # Grafo de ciudades representado como un diccionario de listas de adyacencia.
     grafo_ciudades = {
-        'A': ['B', 'D'],
-        'B': ['A', 'C', 'E'],
-        'C': ['B', 'D', 'F'],
-        'D': ['A', 'C'],
-        'E': ['B', 'F'],
-        'F': ['C', 'E']
+        'A': ['B', 'D'],  # Nodo A conectado a B y D.
+        'B': ['A', 'C', 'E'],  # Nodo B conectado a A, C y E.
+        'C': ['B', 'D', 'F'],  # Nodo C conectado a B, D y F.
+        'D': ['A', 'C'],  # Nodo D conectado a A y C.
+        'E': ['B', 'F'],  # Nodo E conectado a B y F.
+        'F': ['C', 'E']   # Nodo F conectado a C y E.
     }
 
     # Costos entre las aristas del grafo.
@@ -134,19 +129,19 @@ if __name__ == "__main__":
 
     # Crear una instancia de la clase BusquedaInformada.
     buscador = BusquedaInformada(grafo_ciudades, coordenadas_ciudades)
-    inicio = 'A'
-    objetivo = 'F'
+    inicio = 'A'  # Nodo inicial.
+    objetivo = 'F'  # Nodo objetivo.
 
     # Ejecutar A* con heurística euclidiana.
     print("=== A* con Heurística Euclidiana ===")
     camino, costo, expandidos = buscador.a_estrella(inicio, objetivo, costos_ciudades)
-    print(f"Camino: {' → '.join(camino)}")
-    print(f"Costo total: {costo}")
-    print(f"Nodos expandidos: {expandidos}")
+    print(f"Camino: {' → '.join(camino)}")  # Imprime el camino encontrado.
+    print(f"Costo total: {costo}")  # Imprime el costo total del camino.
+    print(f"Nodos expandidos: {expandidos}")  # Imprime el número de nodos expandidos.
 
     # Ejecutar A* con heurística Manhattan.
     print("\n=== A* con Heurística Manhattan ===")
     camino, costo, expandidos = buscador.a_estrella(inicio, objetivo, costos_ciudades, 'manhattan')
-    print(f"Camino: {' → '.join(camino)}")
-    print(f"Costo total: {costo}")
-    print(f"Nodos expandidos: {expandidos}")
+    print(f"Camino: {' → '.join(camino)}")  # Imprime el camino encontrado.
+    print(f"Costo total: {costo}")  # Imprime el costo total del camino.
+    print(f"Nodos expandidos: {expandidos}")  # Imprime el número de nodos expandidos.

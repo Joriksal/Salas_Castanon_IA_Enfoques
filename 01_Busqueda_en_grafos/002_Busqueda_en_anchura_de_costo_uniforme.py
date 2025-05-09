@@ -1,4 +1,5 @@
 # Importamos heapq para implementar una cola de prioridad eficiente
+# heapq: módulo que proporciona una implementación de colas de prioridad basada en heaps binarios
 import heapq
 
 def busqueda_costo_uniforme(grafo, inicio, objetivo):
@@ -18,6 +19,7 @@ def busqueda_costo_uniforme(grafo, inicio, objetivo):
     """
     
     # Inicializamos la cola de prioridad con el nodo inicial
+    # heapq.heappush: agrega un elemento al heap manteniendo la propiedad de prioridad
     # Cada elemento es una tupla (costo_acumulado, nodo_actual, camino)
     cola_prioridad = []
     heapq.heappush(cola_prioridad, (0, inicio, [inicio]))
@@ -29,15 +31,18 @@ def busqueda_costo_uniforme(grafo, inicio, objetivo):
     # Mientras haya nodos por explorar en la cola
     while cola_prioridad:
         # Extraemos el nodo con menor costo acumulado (propiedad del heap)
+        # heapq.heappop: elimina y retorna el elemento con menor prioridad
         costo_acumulado, nodo_actual, camino = heapq.heappop(cola_prioridad)
         
         # Poda: si encontramos un camino mejor a este nodo previamente,
         # ignoramos este camino más costoso
         if costo_acumulado > costos_minimos.get(nodo_actual, float('inf')):
+            # continue: salta a la siguiente iteración del bucle
             continue
         
         # Si llegamos al nodo objetivo, retornamos el resultado
         if nodo_actual == objetivo:
+            # return: finaliza la función y devuelve el resultado
             return (costo_acumulado, camino)
         
         # Exploramos todos los vecinos del nodo actual
@@ -76,10 +81,12 @@ if __name__ == "__main__":
     nodo_objetivo = 'F'
     
     # Ejecutamos UCS
+    # Llamamos a la función con el grafo, nodo inicial y nodo objetivo
     costo, camino = busqueda_costo_uniforme(grafo_con_pesos, nodo_inicio, nodo_objetivo)
     
     # Mostramos resultados
     if camino:
+        # print: imprime en la consola
         print(f"Camino encontrado: {' -> '.join(camino)}")
         print(f"Costo total del camino: {costo}")
         print("\nDesglose del costo:")
@@ -87,6 +94,7 @@ if __name__ == "__main__":
             nodo_actual = camino[i]
             nodo_siguiente = camino[i+1]
             # Buscamos el costo entre estos nodos en el grafo
+            # next: retorna el primer elemento que cumple la condición
             costo_arista = next(c for (n, c) in grafo_con_pesos[nodo_actual] if n == nodo_siguiente)
             print(f"{nodo_actual} -> {nodo_siguiente}: {costo_arista}")
     else:

@@ -1,20 +1,20 @@
-import heapq
-from math import sqrt
-from collections import defaultdict
+import heapq  # Librería para manejar colas de prioridad (usada en A*).
+from math import sqrt  # Para calcular la raíz cuadrada (usada en la heurística euclidiana).
 
 class BusquedaAvanzada:
     def __init__(self, grafo=None, coordenadas=None, grafo_and_or=None, heuristicas=None):
         """
-        Inicializa el buscador con:
-        - grafo: Para A* (diccionario de adyacencia).
-        - coordenadas: Para heurísticas geométricas (distancias entre nodos).
-        - grafo_and_or: Para AO* (nodos AND/OR).
-        - heuristicas: Valores heurísticos para AO*.
+        Constructor de la clase. Inicializa los atributos necesarios para los algoritmos A* y AO*.
+        Args:
+            grafo: Diccionario de adyacencia para el algoritmo A*.
+            coordenadas: Diccionario con las coordenadas de los nodos (para heurísticas geométricas).
+            grafo_and_or: Diccionario que define los nodos AND/OR para AO*.
+            heuristicas: Diccionario con valores heurísticos para AO*.
         """
-        self.grafo = grafo
-        self.coordenadas = coordenadas if coordenadas else {}
-        self.grafo_and_or = grafo_and_or if grafo_and_or else {}
-        self.heuristicas = heuristicas if heuristicas else {}
+        self.grafo = grafo  # Grafo para A*.
+        self.coordenadas = coordenadas if coordenadas else {}  # Coordenadas de los nodos.
+        self.grafo_and_or = grafo_and_or if grafo_and_or else {}  # Grafo AND/OR para AO*.
+        self.heuristicas = heuristicas if heuristicas else {}  # Heurísticas para AO*.
 
     # ------------------------------------------
     # ALGORITMO A*
@@ -29,15 +29,14 @@ class BusquedaAvanzada:
             Distancia euclidiana entre los nodos.
         """
         if a not in self.coordenadas or b not in self.coordenadas:
-            return 0  # Si no hay coordenadas, retornar 0.
-        x1, y1 = self.coordenadas[a]
-        x2, y2 = self.coordenadas[b]
-        return sqrt((x1 - x2)**2 + (y1 - y2)**2)
+            return 0  # Si no hay coordenadas para los nodos, retornar 0.
+        x1, y1 = self.coordenadas[a]  # Coordenadas del nodo 'a'.
+        x2, y2 = self.coordenadas[b]  # Coordenadas del nodo 'b'.
+        return sqrt((x1 - x2)**2 + (y1 - y2)**2)  # Fórmula de distancia euclidiana.
 
     def a_star(self, inicio, objetivo):
         """
-        Implementación del algoritmo A* para grafos OR regulares.
-        Combina el costo acumulado (g) y la heurística (h) para encontrar el camino más corto.
+        Implementación del algoritmo A* para encontrar el camino más corto en un grafo.
         Args:
             inicio: Nodo inicial.
             objetivo: Nodo objetivo.
@@ -114,9 +113,9 @@ class BusquedaAvanzada:
 
         # Inicializar con valores por defecto.
         mejor = {
-            'costo': float('inf'),
-            'camino': None,
-            'explicacion': []
+            'costo': float('inf'),  # Costo inicial infinito.
+            'camino': None,  # Camino inicial vacío.
+            'explicacion': []  # Explicación inicial vacía.
         }
 
         # Expandir según el tipo de nodo (AND/OR).
@@ -208,12 +207,14 @@ class BusquedaAvanzada:
         return buscador.ao_star('A', 'F')
 
 if __name__ == "__main__":
+    # Ejecución del ejemplo de A*.
     print("=== EJECUCIÓN DE A* ===")
     camino_a, costo_a, expandidos_a = BusquedaAvanzada.ejemplo_a_star()
     print(f"Camino: {' → '.join(camino_a)}")
     print(f"Costo: {costo_a}")
     print(f"Nodos expandidos: {expandidos_a}")
 
+    # Ejecución del ejemplo de AO*.
     print("\n=== EJECUCIÓN DE AO* ===")
     resultado_ao = BusquedaAvanzada.ejemplo_ao_star()
     print(f"Camino: {' → '.join(resultado_ao['camino'])}")

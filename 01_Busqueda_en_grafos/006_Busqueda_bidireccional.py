@@ -1,4 +1,4 @@
-from collections import deque
+from collections import deque  # Importación de deque para implementar colas eficientes.
 
 def busqueda_bidireccional(grafo, inicio, objetivo):
     """
@@ -42,9 +42,9 @@ def busqueda_bidireccional(grafo, inicio, objetivo):
                 # Comprobar si hay intersección con los nodos visitados desde el objetivo.
                 if vecino in visitados_objetivo:
                     interseccion = vecino  # Registrar el nodo de intersección.
-                    break
+                    break  # Salir del bucle si se encuentra intersección.
         
-        if interseccion:  # Si se encontró intersección, salir del bucle.
+        if interseccion:  # Si se encontró intersección, salir del bucle principal.
             break
             
         # Búsqueda desde el objetivo.
@@ -58,9 +58,9 @@ def busqueda_bidireccional(grafo, inicio, objetivo):
                 # Comprobar si hay intersección con los nodos visitados desde el inicio.
                 if vecino in visitados_inicio:
                     interseccion = vecino  # Registrar el nodo de intersección.
-                    break
+                    break  # Salir del bucle si se encuentra intersección.
         
-        if interseccion:  # Si se encontró intersección, salir del bucle.
+        if interseccion:  # Si se encontró intersección, salir del bucle principal.
             break
     
     # Reconstruir el camino si hay intersección.
@@ -94,18 +94,18 @@ def busqueda_bidireccional(grafo, inicio, objetivo):
 if __name__ == "__main__":
     # Grafo de ejemplo representado como un diccionario de listas de adyacencia.
     grafo = {
-        'A': ['B', 'C'],
-        'B': ['A', 'D', 'E'],
-        'C': ['A', 'F'],
-        'D': ['B'],
-        'E': ['B', 'F'],
-        'F': ['C', 'E', 'G'],
-        'G': ['F']
+        'A': ['B', 'C'],  # Nodo A conectado a B y C.
+        'B': ['A', 'D', 'E'],  # Nodo B conectado a A, D y E.
+        'C': ['A', 'F'],  # Nodo C conectado a A y F.
+        'D': ['B'],  # Nodo D conectado a B.
+        'E': ['B', 'F'],  # Nodo E conectado a B y F.
+        'F': ['C', 'E', 'G'],  # Nodo F conectado a C, E y G.
+        'G': ['F']  # Nodo G conectado a F.
     }
     
     # Nodo inicial y nodo objetivo.
-    inicio = 'A'
-    objetivo = 'G'
+    inicio = 'A'  # Nodo desde donde comienza la búsqueda.
+    objetivo = 'G'  # Nodo que se desea encontrar.
     
     # Ejecutar la búsqueda bidireccional.
     camino, visitados = busqueda_bidireccional(grafo, inicio, objetivo)
@@ -113,9 +113,9 @@ if __name__ == "__main__":
     # Mostrar los resultados de la búsqueda.
     if camino:
         # Si se encuentra un camino, mostrarlo junto con los nodos visitados.
-        print(f"Camino encontrado: {' → '.join(camino)}")
-        print(f"Nodos visitados: {len(visitados)}")
-        print(f"Todos los nodos visitados: {', '.join(sorted(visitados))}")
+        print(f"Camino encontrado: {' → '.join(camino)}")  # Camino encontrado.
+        print(f"Nodos visitados: {len(visitados)}")  # Número total de nodos visitados.
+        print(f"Todos los nodos visitados: {', '.join(sorted(visitados))}")  # Lista de nodos visitados.
     else:
         # Si no se encuentra un camino, mostrar un mensaje.
-        print("No se encontró camino entre los nodos")
+        print("No se encontró camino entre los nodos")  # Mensaje de error.

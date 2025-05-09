@@ -12,7 +12,7 @@ def busqueda_profundidad_limitada(grafo, inicio, objetivo, limite):
         tuple: (camino, nodos_visitados) si se encuentra el objetivo, o (None, nodos_visitados) si no se encuentra.
     """
     
-    # Pila para almacenar los nodos a explorar. Cada elemento es una tupla (nodo, profundidad, camino).
+    # Inicializa la pila (estructura LIFO) con el nodo inicial, profundidad 0 y el camino que contiene solo el nodo inicial.
     pila = [(inicio, 0, [inicio])]
     
     # Lista para registrar los nodos visitados en el orden en que se exploran.
@@ -28,7 +28,8 @@ def busqueda_profundidad_limitada(grafo, inicio, objetivo, limite):
         
         # Verificar si el nodo actual es el objetivo.
         if nodo_actual == objetivo:
-            return camino, visitados  # Retornar el camino encontrado y los nodos visitados.
+            # Si se encuentra el objetivo, retorna el camino y los nodos visitados.
+            return camino, visitados
         
         # Solo expandir los vecinos si no se ha alcanzado el límite de profundidad.
         if profundidad < limite:
@@ -46,17 +47,17 @@ def busqueda_profundidad_limitada(grafo, inicio, objetivo, limite):
 if __name__ == "__main__":
     # Definición de un grafo de ejemplo como un diccionario de listas de adyacencia.
     grafo_ejemplo = {
-        'A': ['B', 'C'],
-        'B': ['A', 'D', 'E'],
-        'C': ['A', 'F'],
-        'D': ['B'],
-        'E': ['B', 'F'],
-        'F': ['C', 'E']
+        'A': ['B', 'C'],  # Nodo 'A' tiene como vecinos a 'B' y 'C'.
+        'B': ['A', 'D', 'E'],  # Nodo 'B' tiene como vecinos a 'A', 'D' y 'E'.
+        'C': ['A', 'F'],  # Nodo 'C' tiene como vecinos a 'A' y 'F'.
+        'D': ['B'],  # Nodo 'D' tiene como vecino a 'B'.
+        'E': ['B', 'F'],  # Nodo 'E' tiene como vecinos a 'B' y 'F'.
+        'F': ['C', 'E']  # Nodo 'F' tiene como vecinos a 'C' y 'E'.
     }
     
     # Configuración inicial para la búsqueda.
-    inicio = 'A'  # Nodo inicial.
-    objetivo = 'F'  # Nodo objetivo.
+    inicio = 'A'  # Nodo inicial desde donde comienza la búsqueda.
+    objetivo = 'F'  # Nodo objetivo que se desea encontrar.
     limite_profundidad = 2  # Profundidad máxima permitida para la búsqueda.
     
     # Mensaje inicial.
@@ -70,8 +71,8 @@ if __name__ == "__main__":
     if camino:
         # Si se encuentra un camino, mostrarlo junto con la profundidad alcanzada.
         print("\n¡Camino encontrado!")
-        print(f"Camino: {' → '.join(camino)}")
-        print(f"Profundidad alcanzada: {len(camino)-1}")
+        print(f"Camino: {' → '.join(camino)}")  # Une los nodos del camino con una flecha.
+        print(f"Profundidad alcanzada: {len(camino)-1}")  # Calcula la profundidad como el número de aristas.
     else:
         # Si no se encuentra un camino dentro del límite de profundidad, mostrar un mensaje.
         print("\nNo se encontró camino dentro del límite de profundidad")
