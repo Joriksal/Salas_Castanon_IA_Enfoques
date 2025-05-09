@@ -1,6 +1,6 @@
-import numpy as np
-from collections import defaultdict
-import random
+import numpy as np  # Biblioteca para cálculos numéricos, usada para manejar valores Q.
+from collections import defaultdict  # Estructura de datos para inicializar valores por defecto.
+import random  # Biblioteca para generar números aleatorios, usada en la exploración.
 
 class OnlineSearchAgent:
     def __init__(self, action_space, learning_rate=0.1, discount_factor=0.9, exploration_rate=0.2):
@@ -13,14 +13,14 @@ class OnlineSearchAgent:
             discount_factor: Factor de descuento (0-1), controla la importancia de recompensas futuras.
             exploration_rate: Probabilidad de exploración (0-1), controla cuánto explora el agente.
         """
-        self.action_space = action_space
-        self.learning_rate = learning_rate
-        self.discount_factor = discount_factor
-        self.exploration_rate = exploration_rate
+        self.action_space = action_space  # Lista de acciones posibles.
+        self.learning_rate = learning_rate  # Tasa de aprendizaje.
+        self.discount_factor = discount_factor  # Factor de descuento para recompensas futuras.
+        self.exploration_rate = exploration_rate  # Probabilidad de explorar en lugar de explotar.
         # Diccionario para almacenar los valores Q, inicializados en 0 para cada acción.
         self.q_values = defaultdict(lambda: np.zeros(len(action_space)))
-        self.last_state = None  # Último estado visitado.
-        self.last_action = None  # Última acción tomada.
+        self.last_state = None  # Último estado visitado por el agente.
+        self.last_action = None  # Última acción tomada por el agente.
 
     def choose_action(self, state):
         """
@@ -34,13 +34,13 @@ class OnlineSearchAgent:
         """
         state_key = self._state_to_key(state)  # Convertir el estado a una clave hashable.
         
-        if random.random() < self.exploration_rate:
+        if random.random() < self.exploration_rate:  # Condición para explorar.
             # Exploración: elige una acción aleatoria.
             action = random.choice(self.action_space)
         else:
             # Explotación: elige la mejor acción según los valores Q actuales.
-            action_idx = np.argmax(self.q_values[state_key])
-            action = self.action_space[action_idx]
+            action_idx = np.argmax(self.q_values[state_key])  # Índice de la acción con mayor valor Q.
+            action = self.action_space[action_idx]  # Acción correspondiente al índice.
         
         # Guardar el estado y la acción para la actualización posterior.
         self.last_state = state_key
@@ -55,11 +55,11 @@ class OnlineSearchAgent:
             next_state: Estado alcanzado después de tomar la acción.
             reward: Recompensa recibida por la acción tomada.
         """
-        if self.last_state is None:
-            return  # Si no hay un estado previo, no se puede actualizar.
+        if self.last_state is None:  # Si no hay un estado previo, no se puede actualizar.
+            return
             
         next_state_key = self._state_to_key(next_state)  # Convertir el siguiente estado a clave hashable.
-        current_q = self.q_values[self.last_state][self.action_space.index(self.last_action)]
+        current_q = self.q_values[self.last_state][self.action_space.index(self.last_action)]  # Valor Q actual.
         
         # Calcular el máximo valor Q para el siguiente estado.
         max_next_q = np.max(self.q_values[next_state_key])
@@ -82,7 +82,7 @@ class OnlineSearchAgent:
         Returns:
             str: Clave hashable del estado.
         """
-        return str(state)  # Convertir el estado a string.
+        return str(state)  # Convertir el estado a string para usarlo como clave.
 
 # ------------------------------------------
 # EJEMPLO: AGENTE PARA LABERINTO ONLINE
@@ -96,9 +96,9 @@ class LaberintoOnline:
         Args:
             size: Tamaño del laberinto.
         """
-        self.size = size
+        self.size = size  # Tamaño del laberinto.
         self.goal = (size-1, size-1)  # La meta está en la esquina inferior derecha.
-        self.reset()
+        self.reset()  # Reiniciar el laberinto.
         
     def reset(self):
         """
@@ -120,19 +120,19 @@ class LaberintoOnline:
         Returns:
             tuple: (nuevo_estado, recompensa, terminado).
         """
-        x, y = self.position
+        x, y = self.position  # Coordenadas actuales del agente.
         
         # Mover según la acción.
-        if action == 'arriba' and x > 0:
+        if action == 'arriba' and x > 0:  # Mover hacia arriba si no está en el borde superior.
             x -= 1
-        elif action == 'abajo' and x < self.size-1:
+        elif action == 'abajo' and x < self.size-1:  # Mover hacia abajo si no está en el borde inferior.
             x += 1
-        elif action == 'izquierda' and y > 0:
+        elif action == 'izquierda' and y > 0:  # Mover hacia la izquierda si no está en el borde izquierdo.
             y -= 1
-        elif action == 'derecha' and y < self.size-1:
+        elif action == 'derecha' and y < self.size-1:  # Mover hacia la derecha si no está en el borde derecho.
             y += 1
             
-        self.position = (x, y)
+        self.position = (x, y)  # Actualizar la posición del agente.
         
         # Calcular recompensa.
         reward = 1 if self.position == self.goal else -0.1  # Recompensa positiva al alcanzar la meta.
@@ -142,16 +142,16 @@ class LaberintoOnline:
 
 if __name__ == "__main__":
     # Configuración del agente y el entorno.
-    acciones = ['arriba', 'abajo', 'izquierda', 'derecha']
-    agente = OnlineSearchAgent(acciones, learning_rate=0.1, exploration_rate=0.3)
-    entorno = LaberintoOnline(size=5)
+    acciones = ['arriba', 'abajo', 'izquierda', 'derecha']  # Espacio de acciones.
+    agente = OnlineSearchAgent(acciones, learning_rate=0.1, exploration_rate=0.3)  # Crear agente.
+    entorno = LaberintoOnline(size=5)  # Crear entorno del laberinto.
     
     # Entrenamiento del agente.
     print("=== ENTRENAMIENTO ===")
-    for episodio in range(100):
+    for episodio in range(100):  # Entrenar durante 100 episodios.
         estado = entorno.reset()  # Reiniciar el laberinto.
-        total_recompensa = 0
-        pasos = 0
+        total_recompensa = 0  # Acumular recompensa total.
+        pasos = 0  # Contar pasos en el episodio.
         
         while True:
             accion = agente.choose_action(estado)  # Elegir acción.
@@ -165,7 +165,7 @@ if __name__ == "__main__":
             if terminado:  # Si se alcanzó la meta, terminar el episodio.
                 break
         
-        if (episodio + 1) % 10 == 0:
+        if (episodio + 1) % 10 == 0:  # Mostrar progreso cada 10 episodios.
             print(f"Episodio {episodio+1}: Recompensa={total_recompensa:.1f}, Pasos={pasos}")
     
     # Prueba final del agente.

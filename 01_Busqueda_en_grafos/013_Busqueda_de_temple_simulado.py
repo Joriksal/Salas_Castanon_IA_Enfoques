@@ -1,7 +1,5 @@
 import random
 import math
-import numpy as np
-from copy import deepcopy
 
 class SimulatedAnnealing:
     def __init__(self, funcion_objetivo, generar_vecino, temp_inicial=1000, 
@@ -17,12 +15,13 @@ class SimulatedAnnealing:
             enfriamiento: Factor de reducción de temperatura (0 < enfriamiento < 1).
             iter_por_temp: Número de iteraciones por cada temperatura.
         """
-        self.funcion = funcion_objetivo
-        self.generar_vecino = generar_vecino
-        self.temp_inicial = temp_inicial
-        self.temp_final = temp_final
-        self.enfriamiento = enfriamiento
-        self.iter_por_temp = iter_por_temp
+        # Almacena los parámetros del algoritmo.
+        self.funcion = funcion_objetivo  # Función objetivo a minimizar.
+        self.generar_vecino = generar_vecino  # Función para generar vecinos.
+        self.temp_inicial = temp_inicial  # Temperatura inicial.
+        self.temp_final = temp_final  # Temperatura final (criterio de parada).
+        self.enfriamiento = enfriamiento  # Factor de enfriamiento.
+        self.iter_por_temp = iter_por_temp  # Iteraciones por temperatura.
 
     def resolver(self, estado_inicial):
         """
@@ -37,19 +36,19 @@ class SimulatedAnnealing:
                 - mejor_valor: El valor de la función objetivo en el mejor estado.
                 - historial: Lista de datos históricos de cada iteración.
         """
-        # Inicialización
-        actual = deepcopy(estado_inicial)  # Estado actual.
+        # Inicialización de variables.
+        actual = estado_inicial  # Estado actual.
         valor_actual = self.funcion(actual)  # Valor de la función objetivo en el estado actual.
-        mejor_estado = deepcopy(actual)  # Mejor estado encontrado globalmente.
+        mejor_estado = actual  # Mejor estado encontrado globalmente.
         mejor_valor = valor_actual  # Mejor valor de la función objetivo.
         temperatura = self.temp_inicial  # Temperatura inicial.
         historial = []  # Historial para registrar el progreso.
 
+        # Bucle principal: continúa mientras la temperatura sea mayor que la final.
         while temperatura > self.temp_final:
-            for _ in range(self.iter_por_temp):
-                # Generar un vecino aleatorio del estado actual.
-                vecino = self.generar_vecino(actual)
-                valor_vecino = self.funcion(vecino)
+            for _ in range(self.iter_por_temp):  # Iterar un número fijo de veces por temperatura.
+                vecino = self.generar_vecino(actual)  # Generar un vecino aleatorio.
+                valor_vecino = self.funcion(vecino)  # Evaluar la función objetivo en el vecino.
 
                 # Diferencia de energía (queremos minimizar).
                 delta = valor_vecino - valor_actual
@@ -57,25 +56,26 @@ class SimulatedAnnealing:
                 # Criterio de aceptación:
                 # Aceptar si el vecino es mejor o con una probabilidad basada en la temperatura.
                 if delta < 0 or random.random() < math.exp(-delta / temperatura):
-                    actual = vecino
-                    valor_actual = valor_vecino
+                    actual = vecino  # Actualizar el estado actual.
+                    valor_actual = valor_vecino  # Actualizar el valor actual.
 
                     # Actualizar el mejor estado global si el vecino es mejor.
                     if valor_actual < mejor_valor:
-                        mejor_estado = deepcopy(actual)
+                        mejor_estado = actual
                         mejor_valor = valor_actual
 
             # Registrar datos históricos.
             historial.append({
-                'temperatura': temperatura,
-                'mejor_valor': mejor_valor,
-                'valor_actual': valor_actual
+                'temperatura': temperatura,  # Temperatura actual.
+                'mejor_valor': mejor_valor,  # Mejor valor encontrado hasta ahora.
+                'valor_actual': valor_actual  # Valor actual en esta iteración.
             })
 
             # Reducir la temperatura (enfriamiento).
             temperatura *= self.enfriamiento
 
-        return mejor_estado, mejor_valor, historial  # Retornar el mejor estado, valor y el historial.
+        # Retornar el mejor estado, valor y el historial.
+        return mejor_estado, mejor_valor, historial
 
 # ------------------------------------------
 # EJEMPLOS DE USO

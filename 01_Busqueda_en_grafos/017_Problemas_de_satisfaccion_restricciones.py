@@ -8,15 +8,20 @@ class CSP:
             dominios: Diccionario {variable: lista_de_valores_posibles}.
             restricciones: Lista de funciones que verifican restricciones (asignacion -> bool).
         """
+        # Lista de variables del problema
         self.variables = variables
-        self.dominios = {var: list(dominios[var]) for var in variables}  # Copia de los dominios.
+        # Copia de los dominios para cada variable
+        self.dominios = {var: list(dominios[var]) for var in variables}
+        # Lista de restricciones (funciones lambda que devuelven True/False)
         self.restricciones = restricciones
+        # Diccionario para almacenar los vecinos de cada variable
         self.vecinos = {var: [] for var in variables}
         
-        # Preprocesar vecinos para cada variable
+        # Preprocesar vecinos para cada variable según las restricciones
         for restriccion in restricciones:
             vars_involucradas = self._obtener_variables_en_restriccion(restriccion)
             for var in vars_involucradas:
+                # Agregar como vecinos las otras variables involucradas en la restricción
                 self.vecinos[var].extend([v for v in vars_involucradas if v != var])
         
         # Eliminar duplicados en la lista de vecinos
@@ -34,7 +39,9 @@ class CSP:
         Returns:
             list: Lista de nombres de variables utilizadas en la restricción.
         """
+        # Verifica si la restricción tiene un atributo '__code__' (es una función)
         if hasattr(restriccion, '__code__'):
+            # Obtiene los nombres de las variables utilizadas en la función
             return list(restriccion.__code__.co_varnames[:restriccion.__code__.co_argcount])
         return []
     
@@ -50,15 +57,18 @@ class CSP:
         Returns:
             bool: True si la asignación es consistente, False en caso contrario.
         """
+        # Crear una copia temporal de la asignación actual
         asignacion_temporal = asignacion.copy()
         asignacion_temporal[variable] = valor
         
+        # Verificar cada restricción
         for restriccion in self.restricciones:
-            # Verificar solo restricciones que involucren la variable actual
+            # Obtener las variables involucradas en la restricción
             vars_restr = self._obtener_variables_en_restriccion(restriccion)
             if variable in vars_restr:
                 # Verificar si todas las variables de la restricción están asignadas
                 if all(v in asignacion_temporal for v in vars_restr):
+                    # Evaluar la restricción con los valores asignados
                     if not restriccion(**{v: asignacion_temporal[v] for v in vars_restr}):
                         return False
         return True
@@ -74,7 +84,9 @@ class CSP:
         Returns:
             str: Variable seleccionada.
         """
+        # Filtrar variables que aún no han sido asignadas
         no_asignadas = [v for v in self.variables if v not in asignacion]
+        # Seleccionar la variable con el menor número de valores posibles en su dominio
         return min(no_asignadas, key=lambda var: len(self.dominios[var]))
     
     def ordenar_valores(self, variable, asignacion):
@@ -88,6 +100,7 @@ class CSP:
         Returns:
             list: Lista de valores ordenados.
         """
+        # Retorna los valores del dominio ordenados (sin heurística adicional)
         return sorted(self.dominios[variable])
     
     def forward_checking(self, variable, valor, asignacion):
@@ -102,8 +115,10 @@ class CSP:
         Returns:
             dict: Reducciones realizadas en los dominios (para revertir si es necesario).
         """
-        reducciones = {}  # Guardar cambios para poder revertirlos
+        # Diccionario para registrar reducciones en los dominios
+        reducciones = {}
         
+        # Iterar sobre las variables vecinas
         for vecina in self.vecinos[variable]:
             if vecina not in asignacion:
                 for val in self.dominios[vecina][:]:
@@ -112,13 +127,15 @@ class CSP:
                     asignacion_temporal[variable] = valor
                     asignacion_temporal[vecina] = val
                     
+                    # Si no es consistente, eliminar el valor del dominio
                     if not self.es_consistente(vecina, val, asignacion_temporal):
                         if vecina not in reducciones:
                             reducciones[vecina] = []
                         reducciones[vecina].append(val)
                         self.dominios[vecina].remove(val)
                 
-                if not self.dominios[vecina]:  # Dominio vacío
+                # Si el dominio de una vecina queda vacío, revertir cambios
+                if not self.dominios[vecina]:
                     self._revertir_reducciones(reducciones)
                     return False
         
@@ -131,6 +148,7 @@ class CSP:
         Args:
             reducciones: Cambios realizados en los dominios.
         """
+        # Restaurar los valores eliminados en los dominios
         for var, valores in reducciones.items():
             self.dominios[var].extend(valores)
     
@@ -144,21 +162,25 @@ class CSP:
         Returns:
             dict: Asignación completa si se encuentra solución, None en caso contrario.
         """
+        # Si todas las variables están asignadas, se encontró una solución
         if len(asignacion) == len(self.variables):
-            return asignacion  # Solución encontrada.
+            return asignacion
         
+        # Seleccionar una variable no asignada
         var = self.seleccionar_variable_no_asignada(asignacion)
         
+        # Probar cada valor en el dominio de la variable
         for valor in self.ordenar_valores(var, asignacion):
             if self.es_consistente(var, valor, asignacion):
+                # Crear una nueva asignación parcial
                 nueva_asignacion = asignacion.copy()
                 nueva_asignacion[var] = valor
                 
-                # Hacer copia de dominios antes de forward checking
+                # Hacer copia de dominios antes de aplicar forward checking
                 dominios_originales = {v: list(self.dominios[v]) for v in self.variables}
                 reducciones = self.forward_checking(var, valor, nueva_asignacion)
                 
-                if reducciones is not False:  # No hubo dominios vacíos
+                if reducciones is not False:  # Si no hubo dominios vacíos
                     resultado = self.resolver(nueva_asignacion)
                     if resultado is not None:
                         return resultado
@@ -173,7 +195,7 @@ class CSP:
 # =============================================
 
 if __name__ == "__main__":
-    print("\n=== EJEMPLO 2: SUDOKU SIMPLIFICADO (4x4) ===")
+    # Ejemplo de resolución de un Sudoku simplificado (4x4)
     variables_sudoku = [f"{fila}{col}" for fila in range(4) for col in range(4)]
     
     # Grid inicial (0 = vacío)
@@ -184,24 +206,23 @@ if __name__ == "__main__":
         [0, 0, 0, 4]
     ]
     
+    # Crear dominios para cada celda del Sudoku
     dominios_sudoku = {}
     for fila in range(4):
         for col in range(4):
             var = f"{fila}{col}"
             dominios_sudoku[var] = [grid[fila][col]] if grid[fila][col] != 0 else [1, 2, 3, 4]
 
-    # Restricciones para Sudoku
+    # Generar restricciones para el Sudoku
     def generar_restricciones_sudoku():
         restricciones = []
         
         # Restricciones por fila
         for fila in range(4):
-            vars_fila = [f"{fila}{col}" for col in range(4)]
             restricciones.append(lambda **vals: len(set(vals.values())) == len(vals))
         
         # Restricciones por columna
         for col in range(4):
-            vars_col = [f"{fila}{col}" for fila in range(4)]
             restricciones.append(lambda **vals: len(set(vals.values())) == len(vals))
         
         # Restricciones por cuadrante 2x2
@@ -216,6 +237,7 @@ if __name__ == "__main__":
         
         return restricciones
 
+    # Crear y resolver el CSP para el Sudoku
     csp_sudoku = CSP(variables_sudoku, dominios_sudoku, generar_restricciones_sudoku())
     sol_sudoku = csp_sudoku.resolver()
     

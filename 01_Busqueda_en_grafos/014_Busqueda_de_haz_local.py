@@ -1,6 +1,5 @@
-import heapq
-import random
-from math import sqrt
+import heapq  # Librería para trabajar con colas de prioridad (usada en heapq.nlargest)
+import random  # Librería para generar números aleatorios (usada en varios lugares)
 
 class LocalBeamSearch:
     def __init__(self, funcion_objetivo, generar_sucesores, k=3, max_iter=100):
@@ -13,10 +12,10 @@ class LocalBeamSearch:
             k: Número de estados a mantener en el haz.
             max_iter: Número máximo de iteraciones.
         """
-        self.funcion = funcion_objetivo
-        self.generar_sucesores = generar_sucesores
-        self.k = k
-        self.max_iter = max_iter
+        self.funcion = funcion_objetivo  # Función objetivo que se busca maximizar.
+        self.generar_sucesores = generar_sucesores  # Función para generar estados sucesores.
+        self.k = k  # Número de estados en el haz.
+        self.max_iter = max_iter  # Número máximo de iteraciones.
 
     def resolver(self, estados_iniciales):
         """
@@ -33,31 +32,32 @@ class LocalBeamSearch:
         """
         # Verificar que tenemos al menos k estados iniciales.
         if len(estados_iniciales) < self.k:
+            # Si no hay suficientes estados iniciales, se rellenan con copias aleatorias.
             estados_iniciales += [random.choice(estados_iniciales) for _ in range(self.k - len(estados_iniciales))]
         
         # Inicializar los k estados actuales.
         estados_actuales = estados_iniciales[:self.k]
-        mejor_estado = None
+        mejor_estado = None  # Variable para almacenar el mejor estado encontrado.
         mejor_valor = -float('inf')  # Inicializar con un valor muy bajo.
         historial = []  # Historial para registrar el progreso.
 
-        for iteracion in range(self.max_iter):
+        for iteracion in range(self.max_iter):  # Bucle principal de iteraciones.
             # Generar todos los sucesores de los estados actuales.
             todos_sucesores = []
             for estado in estados_actuales:
-                sucesores = self.generar_sucesores(estado)
-                todos_sucesores.extend(sucesores)
+                sucesores = self.generar_sucesores(estado)  # Generar sucesores del estado actual.
+                todos_sucesores.extend(sucesores)  # Agregar los sucesores a la lista total.
             
             # Evaluar todos los sucesores.
             sucesores_evaluados = []
             for sucesor in todos_sucesores:
-                valor = self.funcion(sucesor)  # Evaluar la función objetivo.
-                sucesores_evaluados.append((valor, sucesor))
+                valor = self.funcion(sucesor)  # Evaluar la función objetivo en cada sucesor.
+                sucesores_evaluados.append((valor, sucesor))  # Guardar el valor y el sucesor.
             
-            # Seleccionar los k mejores sucesores.
+            # Seleccionar los k mejores sucesores usando una cola de prioridad.
             mejores = heapq.nlargest(self.k, sucesores_evaluados, key=lambda x: x[0])
             
-            # Actualizar el mejor estado global.
+            # Actualizar el mejor estado global si se encuentra uno mejor.
             mejor_actual_val, mejor_actual_estado = mejores[0]
             if mejor_actual_val > mejor_valor:
                 mejor_valor = mejor_actual_val

@@ -8,11 +8,11 @@ class BacktrackingSolver:
             dominios: Diccionario {variable: lista de valores posibles}.
             restricciones: Lista de funciones que verifican restricciones (asignacion -> bool).
         """
-        self.variables = variables
-        self.dominios = dominios
-        self.restricciones = restricciones
-        self.asignacion = {}  # Asignación parcial actual.
-        self.nodos_expandidos = 0  # Contador de nodos expandidos.
+        self.variables = variables  # Variables del problema.
+        self.dominios = dominios  # Dominios posibles para cada variable.
+        self.restricciones = restricciones  # Lista de restricciones a cumplir.
+        self.asignacion = {}  # Asignación parcial actual (vacía al inicio).
+        self.nodos_expandidos = 0  # Contador de nodos expandidos durante la búsqueda.
 
     def es_completa(self):
         """
@@ -21,6 +21,7 @@ class BacktrackingSolver:
         Returns:
             bool: True si todas las variables están asignadas, False en caso contrario.
         """
+        # Devuelve True si todas las variables tienen un valor asignado.
         return len(self.asignacion) == len(self.variables)
 
     def es_consistente(self, variable, valor):
@@ -34,16 +35,20 @@ class BacktrackingSolver:
         Returns:
             bool: True si la asignación es consistente, False en caso contrario.
         """
+        # Crear una copia temporal de la asignación para probar la consistencia.
         asignacion_temp = self.asignacion.copy()
         asignacion_temp[variable] = valor
         
+        # Verificar cada restricción.
         for restriccion in self.restricciones:
-            # Verificar solo restricciones que involucren variables asignadas.
+            # Obtener las variables involucradas en la restricción.
             vars_restr = self._obtener_variables_restriccion(restriccion)
+            # Verificar si todas las variables de la restricción están asignadas.
             if all(v in asignacion_temp for v in vars_restr):
+                # Si la restricción no se cumple, devolver False.
                 if not restriccion(asignacion_temp):
                     return False
-        return True
+        return True  # Si todas las restricciones se cumplen, devolver True.
 
     def _obtener_variables_restriccion(self, restriccion):
         """
@@ -55,6 +60,7 @@ class BacktrackingSolver:
         Returns:
             list: Lista de variables involucradas en la restricción.
         """
+        # Inspeccionar los argumentos de la función de restricción para obtener las variables.
         if hasattr(restriccion, '__code__'):
             return restriccion.__code__.co_varnames[:restriccion.__code__.co_argcount]
         return []
@@ -67,7 +73,9 @@ class BacktrackingSolver:
         Returns:
             str: Variable seleccionada.
         """
+        # Filtrar las variables que aún no han sido asignadas.
         no_asignadas = [v for v in self.variables if v not in self.asignacion]
+        # Seleccionar la variable con el menor número de valores posibles en su dominio.
         return min(no_asignadas, key=lambda v: len(self.dominios[v]))
 
     def ordenar_valores(self, variable):
@@ -80,6 +88,7 @@ class BacktrackingSolver:
         Returns:
             list: Lista de valores ordenados.
         """
+        # Devuelve los valores del dominio de la variable sin aplicar heurísticas.
         return self.dominios[variable]
 
     def resolver(self):
@@ -89,7 +98,9 @@ class BacktrackingSolver:
         Returns:
             dict: Asignación completa si se encuentra solución, None en caso contrario.
         """
-        self.nodos_expandidos = 0  # Reiniciar contador de nodos expandidos.
+        # Reiniciar el contador de nodos expandidos antes de iniciar la búsqueda.
+        self.nodos_expandidos = 0
+        # Llamar a la función recursiva para resolver el problema.
         return self._backtrack()
 
     def _backtrack(self):
@@ -99,36 +110,49 @@ class BacktrackingSolver:
         Returns:
             dict: Asignación completa si se encuentra solución, None en caso contrario.
         """
-        self.nodos_expandidos += 1  # Incrementar contador de nodos expandidos.
+        # Incrementar el contador de nodos expandidos.
+        self.nodos_expandidos += 1
         
+        # Si la asignación es completa, devolver la solución.
         if self.es_completa():
-            return self.asignacion.copy()  # Solución encontrada.
+            return self.asignacion.copy()
 
-        var = self.seleccionar_variable_no_asignada()  # Seleccionar variable no asignada.
+        # Seleccionar una variable no asignada.
+        var = self.seleccionar_variable_no_asignada()
         
-        for valor in self.ordenar_valores(var):  # Probar cada valor del dominio.
-            if self.es_consistente(var, valor):  # Verificar consistencia.
-                self.asignacion[var] = valor  # Asignar valor.
+        # Probar cada valor del dominio de la variable seleccionada.
+        for valor in self.ordenar_valores(var):
+            # Verificar si la asignación es consistente.
+            if self.es_consistente(var, valor):
+                # Asignar el valor a la variable.
+                self.asignacion[var] = valor
                 
-                resultado = self._backtrack()  # Llamada recursiva.
+                # Llamada recursiva para continuar la búsqueda.
+                resultado = self._backtrack()
                 if resultado is not None:
-                    return resultado  # Solución encontrada.
+                    return resultado  # Si se encuentra solución, devolverla.
                 
-                del self.asignacion[var]  # Deshacer asignación si no funciona.
+                # Deshacer la asignación si no lleva a una solución.
+                del self.asignacion[var]
         
-        return None  # No se encontró solución en esta rama.
+        # Si no se encuentra solución en esta rama, devolver None.
+        return None
 
 # =============================================
 # EJEMPLOS DE USO
 # =============================================
 
 if __name__ == "__main__":
+    # Ejemplo 1: Problema de las 4 reinas.
     print("=== EJEMPLO 1: PROBLEMA DE LAS 4 REINAS ===")
     variables = ['Q1', 'Q2', 'Q3', 'Q4']  # Variables: una por cada reina.
     dominios = {q: [1, 2, 3, 4] for q in variables}  # Dominios: columnas posibles.
 
     # Restricción: ninguna reina puede atacarse.
     def no_atacan(asignacion):
+        """
+        Verifica que las reinas no se ataquen entre sí.
+        """
         reinas = list(asignacion.items())
         for i, (q1, c1) in enumerate(reinas):
             for j, (q2, c2) in enumerate(reinas[i+1:], i+1):
@@ -143,8 +167,8 @@ if __name__ == "__main__":
     print("Solución encontrada:", solucion)
     print("Nodos expandidos:", solver.nodos_expandidos)
 
+    # Ejemplo 2: Sudoku 4x4.
     print("\n=== EJEMPLO 2: SUDOKU 4x4 ===")
-    # Definir variables y dominios iniciales.
     variables_sudoku = [f"{fila}{col}" for fila in range(4) for col in range(4)]
     
     # Grid inicial (0 = vacío).
@@ -163,7 +187,9 @@ if __name__ == "__main__":
 
     # Restricción: todos los valores asignados deben ser únicos en su grupo.
     def restriccion_unica(asignacion):
-        """Verifica que todos los valores asignados sean únicos en su grupo."""
+        """
+        Verifica que todos los valores asignados sean únicos en su grupo.
+        """
         grupos = []
         
         # Filas.

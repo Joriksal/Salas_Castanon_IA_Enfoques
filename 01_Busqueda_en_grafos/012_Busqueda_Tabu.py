@@ -1,7 +1,5 @@
-import random
-import numpy as np
-from copy import deepcopy
-from math import sqrt
+import random  # Para generar números aleatorios.
+from copy import deepcopy  # Para realizar copias profundas de objetos.
 
 class BusquedaTabu:
     def __init__(self, funcion_objetivo, generar_vecino, tamano_tabu=10, max_iter=100):
@@ -14,10 +12,10 @@ class BusquedaTabu:
             tamano_tabu: Tamaño máximo de la lista tabú.
             max_iter: Número máximo de iteraciones permitidas.
         """
-        self.funcion = funcion_objetivo
-        self.generar_vecino = generar_vecino
-        self.tamano_tabu = tamano_tabu
-        self.max_iter = max_iter
+        self.funcion = funcion_objetivo  # Función objetivo que se desea minimizar.
+        self.generar_vecino = generar_vecino  # Función para generar vecinos de un estado.
+        self.tamano_tabu = tamano_tabu  # Tamaño máximo de la lista tabú.
+        self.max_iter = max_iter  # Número máximo de iteraciones.
 
     def resolver(self, estado_inicial):
         """
@@ -33,24 +31,24 @@ class BusquedaTabu:
                 - historial: Lista de diccionarios con el progreso de cada iteración.
         """
         # Inicialización
-        mejor_global = deepcopy(estado_inicial)  # Mejor estado global encontrado.
-        mejor_valor = self.funcion(mejor_global)  # Valor de la función objetivo en el mejor estado.
-        actual = deepcopy(estado_inicial)  # Estado actual.
-        lista_tabu = []  # Lista tabú para evitar ciclos.
-        historial = []  # Historial de iteraciones.
+        mejor_global = deepcopy(estado_inicial)  # Copia profunda del estado inicial como mejor estado global.
+        mejor_valor = self.funcion(mejor_global)  # Evaluar la función objetivo en el mejor estado global.
+        actual = deepcopy(estado_inicial)  # Copia profunda del estado inicial como estado actual.
+        lista_tabu = []  # Lista tabú para evitar ciclos (almacena estados ya visitados).
+        historial = []  # Historial para registrar el progreso de cada iteración.
 
-        for iteracion in range(self.max_iter):
+        for iteracion in range(self.max_iter):  # Bucle principal que itera hasta el máximo permitido.
             # Generar vecinos que no estén en la lista tabú.
             vecinos = [v for v in self.generar_vecino(actual) if v not in lista_tabu]
             
-            if not vecinos:  # Si todos los vecinos están en la lista tabú, detener la búsqueda.
+            if not vecinos:  # Si no hay vecinos válidos (todos están en la lista tabú), detener la búsqueda.
                 break
 
             # Evaluar los vecinos para encontrar el mejor.
-            vecino_actual = None
-            mejor_valor_vecino = float('inf')  # Inicializar con un valor muy alto.
+            vecino_actual = None  # Inicializar el mejor vecino como None.
+            mejor_valor_vecino = float('inf')  # Inicializar el mejor valor vecino con infinito (para minimizar).
 
-            for vecino in vecinos:
+            for vecino in vecinos:  # Iterar sobre los vecinos generados.
                 valor = self.funcion(vecino)  # Evaluar la función objetivo en el vecino.
                 if valor < mejor_valor_vecino:  # Si el vecino es mejor, actualizar.
                     mejor_valor_vecino = valor
@@ -58,23 +56,23 @@ class BusquedaTabu:
 
             # Actualizar el mejor estado global si se encuentra una mejora.
             if mejor_valor_vecino < mejor_valor:
-                mejor_global = deepcopy(vecino_actual)
-                mejor_valor = mejor_valor_vecino
+                mejor_global = deepcopy(vecino_actual)  # Actualizar el mejor estado global.
+                mejor_valor = mejor_valor_vecino  # Actualizar el mejor valor global.
 
             # Mover al mejor vecino (aunque no mejore el estado actual).
             actual = vecino_actual
             
-            # Actualizar la lista tabú (FIFO).
-            lista_tabu.append(deepcopy(actual))
+            # Actualizar la lista tabú (FIFO: First In, First Out).
+            lista_tabu.append(deepcopy(actual))  # Agregar el estado actual a la lista tabú.
             if len(lista_tabu) > self.tamano_tabu:  # Si la lista tabú excede su tamaño, eliminar el más antiguo.
                 lista_tabu.pop(0)
 
             # Registrar el progreso en el historial.
             historial.append({
-                'iteracion': iteracion,
-                'estado': deepcopy(actual),
-                'valor': mejor_valor_vecino,
-                'mejor_global': mejor_valor
+                'iteracion': iteracion,  # Número de iteración.
+                'estado': deepcopy(actual),  # Estado actual.
+                'valor': mejor_valor_vecino,  # Valor del mejor vecino.
+                'mejor_global': mejor_valor  # Mejor valor global encontrado hasta ahora.
             })
 
         return mejor_global, mejor_valor, historial  # Retornar el mejor estado, valor y el historial.
@@ -102,7 +100,7 @@ def vecindario_continuo(x, paso=0.1, n_vecinos=5):
     Returns:
         list: Lista de estados vecinos.
     """
-    return [x + random.uniform(-paso, paso) for _ in range(n_vecinos)]
+    return [x + random.uniform(-paso, paso) for _ in range(n_vecinos)]  # Generar vecinos aleatorios.
 
 # Ejemplo 2: Problema de la Mochila.
 def funcion_mochila(solucion, pesos, valores, capacidad):
@@ -118,10 +116,10 @@ def funcion_mochila(solucion, pesos, valores, capacidad):
     Returns:
         float: Valor total de la solución (negativo si excede la capacidad).
     """
-    peso_total = sum(p * s for p, s in zip(pesos, solucion))
-    if peso_total > capacidad:
-        return float('inf')  # Solución inválida si excede la capacidad.
-    return -sum(v * s for v, s in zip(valores, solucion))  # Negativo para minimizar.
+    peso_total = sum(p * s for p, s in zip(pesos, solucion))  # Calcular el peso total de la solución.
+    if peso_total > capacidad:  # Si el peso excede la capacidad, la solución es inválida.
+        return float('inf')  # Retornar infinito para indicar una solución inválida.
+    return -sum(v * s for v, s in zip(valores, solucion))  # Retornar el valor total (negativo para minimizar).
 
 def generar_vecino_mochila(solucion):
     """
@@ -134,20 +132,20 @@ def generar_vecino_mochila(solucion):
         list: Lista de soluciones vecinas.
     """
     vecinos = []
-    for i in range(len(solucion)):
-        vecino = solucion[:]
+    for i in range(len(solucion)):  # Iterar sobre cada elemento de la solución.
+        vecino = solucion[:]  # Copiar la solución actual.
         vecino[i] = 1 - vecino[i]  # Cambiar 0 a 1 o 1 a 0.
-        vecinos.append(vecino)
+        vecinos.append(vecino)  # Agregar el vecino generado.
     return vecinos
 
 if __name__ == "__main__":
     # Ejemplo 1: Minimización de una función matemática.
     print("=== EJEMPLO 1: MINIMIZACIÓN FUNCIÓN MATEMÁTICA ===")
     tabu = BusquedaTabu(
-        funcion_ejemplo,
-        lambda x: vecindario_continuo(x, 0.5, 10),
-        tamano_tabu=5,
-        max_iter=50
+        funcion_ejemplo,  # Función objetivo.
+        lambda x: vecindario_continuo(x, 0.5, 10),  # Función para generar vecinos.
+        tamano_tabu=5,  # Tamaño de la lista tabú.
+        max_iter=50  # Número máximo de iteraciones.
     )
     
     x_inicial = random.uniform(-2, 5)  # Generar un estado inicial aleatorio.
@@ -164,10 +162,10 @@ if __name__ == "__main__":
     capacidad = 15  # Capacidad máxima de la mochila.
     
     tabu_mochila = BusquedaTabu(
-        lambda s: funcion_mochila(s, pesos, valores, capacidad),
-        generar_vecino_mochila,
-        tamano_tabu=3,
-        max_iter=100
+        lambda s: funcion_mochila(s, pesos, valores, capacidad),  # Función objetivo.
+        generar_vecino_mochila,  # Función para generar vecinos.
+        tamano_tabu=3,  # Tamaño de la lista tabú.
+        max_iter=100  # Número máximo de iteraciones.
     )
     
     sol_inicial = [random.randint(0, 1) for _ in valores]  # Generar una solución inicial aleatoria.
