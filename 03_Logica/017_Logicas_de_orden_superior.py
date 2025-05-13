@@ -1,5 +1,4 @@
-from typing import Callable, Dict, Any
-import operator
+from typing import Callable, Any
 
 class MathAssistant:
     """Sistema de verificación matemática con Lógica de Orden Superior (Versión Final)"""

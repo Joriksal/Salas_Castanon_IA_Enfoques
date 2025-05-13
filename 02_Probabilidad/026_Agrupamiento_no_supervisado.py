@@ -1,11 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Agrupamiento no supervisado práctico con K-Means
-- Generación de datos sintéticos
-- Determinación del número óptimo de clusters
-- Visualización profesional
-"""
-
 # Importación de librerías necesarias
 import numpy as np
 import matplotlib.pyplot as plt

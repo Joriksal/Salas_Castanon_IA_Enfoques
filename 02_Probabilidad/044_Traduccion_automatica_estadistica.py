@@ -1,54 +1,71 @@
+# Importamos la librería numpy, que es útil para realizar cálculos numéricos avanzados.
+# Aunque no se utiliza explícitamente en este código, podría ser útil para futuras mejoras.
 import numpy as np
+
+# Importamos defaultdict de la librería collections.
+# defaultdict es una subclase de diccionarios que permite inicializar valores por defecto
+# automáticamente cuando se accede a una clave inexistente.
 from collections import defaultdict
 
+# Definimos una clase llamada ImprovedSMT (Statistical Machine Translation mejorada).
+# Esta clase implementa un modelo básico de traducción automática estadística.
 class ImprovedSMT:
     def __init__(self):
-        # Diccionario para almacenar traducciones de frases
+        # Inicializamos un diccionario para almacenar traducciones de frases.
+        # Utilizamos defaultdict para que cada clave nueva tenga como valor por defecto otro diccionario.
         self.phrase_table = defaultdict(dict)
-        # Diccionario para almacenar traducciones de palabras
+        
+        # Inicializamos un diccionario para almacenar traducciones de palabras individuales.
         self.word_translation = defaultdict(dict)
     
+    # Método para entrenar el modelo con oraciones fuente (src_sentences) y objetivo (tgt_sentences).
     def train(self, src_sentences, tgt_sentences):
         """Entrena el modelo utilizando alineamiento básico de palabras y frases."""
-        # Aprender traducciones de palabras individuales
+        # Llama a un método privado para aprender traducciones de palabras individuales.
         self._learn_word_translations(src_sentences, tgt_sentences)
-        # Aprender traducciones de frases basadas en las traducciones de palabras
+        
+        # Llama a otro método privado para aprender traducciones de frases basadas en las traducciones de palabras.
         self._learn_phrases(src_sentences, tgt_sentences)
     
+    # Método privado para aprender traducciones de palabras individuales.
     def _learn_word_translations(self, src_sentences, tgt_sentences):
         """Aprende traducciones de palabras individuales basadas en alineamiento simple."""
+        # Iteramos sobre pares de oraciones fuente y objetivo.
         for src, tgt in zip(src_sentences, tgt_sentences):
-            src_words = src.split()  # Divide la oración fuente en palabras
-            tgt_words = tgt.split()  # Divide la oración objetivo en palabras
+            # Dividimos las oraciones en palabras utilizando el método split().
+            src_words = src.split()  # Palabras de la oración fuente.
+            tgt_words = tgt.split()  # Palabras de la oración objetivo.
             
-            # Alineamiento simple: empareja palabras en el mismo orden
+            # Alineamos palabras en el mismo orden (alineamiento simple).
             for s, t in zip(src_words, tgt_words):
+                # Si la palabra fuente no tiene traducción registrada, inicializamos el conteo.
                 if s not in self.word_translation or t not in self.word_translation[s]:
-                    # Inicializa el conteo si no existe
                     self.word_translation[s][t] = 1
                 else:
-                    # Incrementa el conteo si ya existe
+                    # Si ya existe, incrementamos el conteo.
                     self.word_translation[s][t] += 1
         
-        # Normaliza los conteos a probabilidades
+        # Normalizamos los conteos para convertirlos en probabilidades.
         for s in self.word_translation:
-            total = sum(self.word_translation[s].values())
+            total = sum(self.word_translation[s].values())  # Suma total de conteos para la palabra fuente.
             for t in self.word_translation[s]:
-                self.word_translation[s][t] /= total
+                self.word_translation[s][t] /= total  # Dividimos cada conteo por el total.
     
+    # Método privado para aprender traducciones de frases.
     def _learn_phrases(self, src_sentences, tgt_sentences):
         """Aprende traducciones de frases basadas en traducciones confiables de palabras."""
+        # Iteramos sobre pares de oraciones fuente y objetivo.
         for src, tgt in zip(src_sentences, tgt_sentences):
-            src_words = src.split()
-            tgt_words = tgt.split()
+            src_words = src.split()  # Palabras de la oración fuente.
+            tgt_words = tgt.split()  # Palabras de la oración objetivo.
             
-            # Genera pares de frases de 1-2 palabras
+            # Generamos pares de frases de 1 a 2 palabras.
             for i in range(len(src_words)):
-                for j in range(i+1, min(i+3, len(src_words)+1)):  # Frases de 1-2 palabras
-                    src_phrase = ' '.join(src_words[i:j])  # Frase fuente
-                    tgt_phrase = ' '.join(tgt_words[i:j])  # Frase objetivo
+                for j in range(i+1, min(i+3, len(src_words)+1)):  # Frases de 1-2 palabras.
+                    src_phrase = ' '.join(src_words[i:j])  # Frase fuente.
+                    tgt_phrase = ' '.join(tgt_words[i:j])  # Frase objetivo.
                     
-                    # Verifica si las palabras individuales tienen alta probabilidad de traducción
+                    # Verificamos si las palabras individuales tienen alta probabilidad de traducción.
                     valid = True
                     for s, t in zip(src_words[i:j], tgt_words[i:j]):
                         if self.word_translation.get(s, {}).get(t, 0) < 0.5:
@@ -56,45 +73,46 @@ class ImprovedSMT:
                             break
                     
                     if valid:
-                        # Agrega la frase a la tabla de frases
+                        # Si la frase es válida, la agregamos a la tabla de frases.
                         if tgt_phrase not in self.phrase_table[src_phrase]:
                             self.phrase_table[src_phrase][tgt_phrase] = 1
                         else:
                             self.phrase_table[src_phrase][tgt_phrase] += 1
         
-        # Normaliza los conteos de frases a probabilidades
+        # Normalizamos los conteos de frases para convertirlos en probabilidades.
         for src in self.phrase_table:
-            total = sum(self.phrase_table[src].values())
+            total = sum(self.phrase_table[src].values())  # Suma total de conteos para la frase fuente.
             for tgt in self.phrase_table[src]:
-                self.phrase_table[src][tgt] /= total
+                self.phrase_table[src][tgt] /= total  # Dividimos cada conteo por el total.
 
+    # Método para traducir una oración utilizando el modelo entrenado.
     def translate(self, sentence):
         """Traduce una oración utilizando el modelo entrenado."""
-        words = sentence.split()  # Divide la oración en palabras
-        translation = []  # Lista para almacenar la traducción
+        words = sentence.split()  # Dividimos la oración en palabras.
+        translation = []  # Lista para almacenar la traducción.
         i = 0
         while i < len(words):
-            # Intenta encontrar la frase más larga posible
+            # Intentamos encontrar la frase más larga posible.
             for length in range(min(3, len(words)-i), 0, -1):
-                phrase = ' '.join(words[i:i+length])  # Genera una frase
+                phrase = ' '.join(words[i:i+length])  # Generamos una frase.
                 if phrase in self.phrase_table:
-                    # Selecciona la traducción más probable
+                    # Seleccionamos la traducción más probable.
                     best_tgt = max(self.phrase_table[phrase].items(), key=lambda x: x[1])[0]
                     translation.append(best_tgt)
-                    i += length  # Avanza el índice
+                    i += length  # Avanzamos el índice.
                     break
             else:
-                # Si no encuentra una frase, traduce palabra por palabra
+                # Si no encontramos una frase, traducimos palabra por palabra.
                 word = words[i]
                 if word in self.word_translation:
                     best_tgt = max(self.word_translation[word].items(), key=lambda x: x[1])[0]
                     translation.append(best_tgt)
                 else:
-                    translation.append(word)  # Deja la palabra sin traducir
+                    translation.append(word)  # Dejamos la palabra sin traducir.
                 i += 1
-        return ' '.join(translation)  # Une las palabras traducidas en una oración
+        return ' '.join(translation)  # Unimos las palabras traducidas en una oración.
 
-# Datos de entrenamiento ampliados
+# Datos de entrenamiento: pares de oraciones en español (fuente) e inglés (objetivo).
 src_sentences = [
     "el gato come pescado",
     "la casa es grande",
@@ -110,22 +128,25 @@ tgt_sentences = [
     "the sun shines brightly"
 ]
 
-# Entrenar y probar
+# Creamos una instancia de la clase ImprovedSMT.
 smt = ImprovedSMT()
+
+# Entrenamos el modelo con los datos de entrenamiento.
 smt.train(src_sentences, tgt_sentences)
 
-# Imprime algunas traducciones aprendidas
+# Imprimimos algunas traducciones aprendidas.
 print("Traducciones aprendidas:")
-print("el gato ->", smt.phrase_table.get("el gato", {}))
-print("perro ->", smt.word_translation.get("perro", {}))
+print("el gato ->", smt.phrase_table.get("el gato", {}))  # Traducción de la frase "el gato".
+print("perro ->", smt.word_translation.get("perro", {}))  # Traducción de la palabra "perro".
 
-# Frases de prueba para traducir
+# Frases de prueba para traducir.
 test_phrases = [
     "el gato come",
     "la niña lee",
     "el perro juega"
 ]
 
+# Imprimimos las traducciones de las frases de prueba.
 print("\nPruebas de traducción:")
 for phrase in test_phrases:
     print(f"{phrase} -> {smt.translate(phrase)}")

@@ -1,5 +1,4 @@
-from typing import List, Dict, Set, Tuple, Optional
-from itertools import combinations
+from typing import List, Set, Tuple
 
 class DefaultLogicSystem:
     def __init__(self):

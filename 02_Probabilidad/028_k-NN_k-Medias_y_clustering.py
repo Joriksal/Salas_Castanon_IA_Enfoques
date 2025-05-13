@@ -1,81 +1,75 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_blobs, make_moons
-from sklearn.neighbors import NearestNeighbors
-from collections import Counter
-from sklearn.metrics import silhouette_score
+# Importación de librerías necesarias
+import numpy as np  # Librería para operaciones matemáticas y manejo de arreglos multidimensionales
+import matplotlib.pyplot as plt  # Librería para visualización de datos (gráficas)
+from sklearn.datasets import make_blobs, make_moons  # Generación de conjuntos de datos de prueba
+from sklearn.neighbors import NearestNeighbors  # Algoritmo para encontrar vecinos más cercanos
+from collections import Counter  # Herramienta para contar elementos en estructuras de datos
+from sklearn.metrics import silhouette_score  # Métrica para evaluar la calidad de los clusters
 
 # Clase para implementar el algoritmo k-Nearest Neighbors (k-NN)
 class KNN:
-    """Implementación completa de k-Nearest Neighbors"""
+    """Implementación completa de k-Nearest Neighbors (k-NN), un algoritmo de clasificación supervisada."""
     def __init__(self, k=3):
-        self.k = k  # Número de vecinos a considerar
+        # Constructor de la clase. Define el número de vecinos a considerar (k).
+        self.k = k  # Número de vecinos más cercanos a considerar para la clasificación
     
     def fit(self, X, y):
-        # Almacena los datos de entrenamiento
-        self.X_train = X
-        self.y_train = y
+        # Método para entrenar el modelo. Almacena los datos de entrenamiento.
+        self.X_train = X  # Características de los datos de entrenamiento
+        self.y_train = y  # Etiquetas de los datos de entrenamiento
     
     def predict(self, X):
-        # Predice la clase para cada muestra en X
-        return np.array([self._predict(x) for x in X])
+        # Predice la clase para cada muestra en X (datos de prueba).
+        return np.array([self._predict(x) for x in X])  # Llama al método interno _predict para cada muestra
     
     def _predict(self, x):
-        # Calcula la distancia entre x y todos los puntos de entrenamiento
-        distances = [np.linalg.norm(x - x_train) for x_train in self.X_train]
-        # Obtiene los índices de los k vecinos más cercanos
-        k_indices = np.argsort(distances)[:self.k]
-        # Obtiene las etiquetas de los k vecinos más cercanos
-        k_labels = [self.y_train[i] for i in k_indices]
-        # Devuelve la etiqueta más común entre los vecinos
-        return Counter(k_labels).most_common(1)[0][0]
+        # Método interno para predecir la clase de una sola muestra.
+        distances = [np.linalg.norm(x - x_train) for x_train in self.X_train]  # Calcula la distancia euclidiana entre x y cada punto de entrenamiento
+        k_indices = np.argsort(distances)[:self.k]  # Obtiene los índices de los k vecinos más cercanos
+        k_labels = [self.y_train[i] for i in k_indices]  # Obtiene las etiquetas de los k vecinos más cercanos
+        return Counter(k_labels).most_common(1)[0][0]  # Devuelve la etiqueta más común entre los vecinos
 
 # Clase para implementar el algoritmo k-Medias (k-Means)
 class KMeans:
-    """Implementación completa de k-Medias"""
+    """Implementación completa de k-Medias, un algoritmo de clustering no supervisado."""
     def __init__(self, k=3, max_iter=100):
+        # Constructor de la clase. Define el número de clusters (k) y el número máximo de iteraciones.
         self.k = k  # Número de clusters
-        self.max_iter = max_iter  # Número máximo de iteraciones
+        self.max_iter = max_iter  # Número máximo de iteraciones para ajustar los centroides
     
     def fit(self, X):
-        # Inicializa los centroides aleatoriamente
-        self.centroids = X[np.random.choice(X.shape[0], self.k, replace=False)]
-        for _ in range(self.max_iter):
-            # Asigna cada punto al cluster más cercano
-            clusters = self._create_clusters(X)
-            # Guarda los centroides anteriores
-            prev_centroids = self.centroids
-            # Calcula los nuevos centroides como la media de los puntos en cada cluster
-            self.centroids = np.array([X[cluster].mean(axis=0) for cluster in clusters])
-            # Si los centroides no cambian, termina
-            if np.allclose(prev_centroids, self.centroids):
+        # Método para ajustar los clusters a los datos.
+        self.centroids = X[np.random.choice(X.shape[0], self.k, replace=False)]  # Inicializa los centroides aleatoriamente
+        for _ in range(self.max_iter):  # Itera hasta alcanzar el máximo de iteraciones o convergencia
+            clusters = self._create_clusters(X)  # Asigna cada punto al cluster más cercano
+            prev_centroids = self.centroids  # Guarda los centroides anteriores
+            self.centroids = np.array([X[cluster].mean(axis=0) for cluster in clusters])  # Calcula los nuevos centroides
+            if np.allclose(prev_centroids, self.centroids):  # Si los centroides no cambian, termina
                 break
     
     def _create_clusters(self, X):
-        # Crea una lista de clusters vacíos
-        clusters = [[] for _ in range(self.k)]
-        for idx, sample in enumerate(X):
-            # Encuentra el índice del centroide más cercano
-            centroid_idx = np.argmin([np.linalg.norm(sample - c) for c in self.centroids])
-            # Asigna el punto al cluster correspondiente
-            clusters[centroid_idx].append(idx)
+        # Método interno para asignar puntos a clusters.
+        clusters = [[] for _ in range(self.k)]  # Crea una lista de clusters vacíos
+        for idx, sample in enumerate(X):  # Itera sobre cada muestra
+            centroid_idx = np.argmin([np.linalg.norm(sample - c) for c in self.centroids])  # Encuentra el índice del centroide más cercano
+            clusters[centroid_idx].append(idx)  # Asigna el punto al cluster correspondiente
         return clusters
     
     def predict(self, X):
-        # Predice el cluster para cada punto en X
+        # Predice el cluster para cada punto en X.
         return np.array([np.argmin([np.linalg.norm(x - c) for c in self.centroids]) for x in X])
 
 # Función para visualizar clusters
 def plot_clusters(X, y, title):
-    """Visualización de clusters"""
-    plt.figure(figsize=(10, 6))
-    plt.scatter(X[:, 0], X[:, 1], c=y, cmap='viridis')
-    plt.title(title)
-    plt.show()
+    """Visualización de clusters en un gráfico 2D."""
+    plt.figure(figsize=(10, 6))  # Define el tamaño de la figura
+    plt.scatter(X[:, 0], X[:, 1], c=y, cmap='viridis')  # Crea un gráfico de dispersión con colores según los clusters
+    plt.title(title)  # Título del gráfico
+    plt.show()  # Muestra el gráfico
 
 # 1. Generación de datos de prueba
-X_blobs, y_blobs = make_blobs(n_samples=300, centers=3, random_state=42)  # Datos con 3 clusters
-X_moons, _ = make_moons(n_samples=300, noise=0.05, random_state=42)  # Datos con forma de luna
+X_blobs, y_blobs = make_blobs(n_samples=300, centers=3, random_state=42)  # Genera datos con 3 clusters
+X_moons, _ = make_moons(n_samples=300, noise=0.05, random_state=42)  # Genera datos con forma de luna
 
 # 2. k-NN (Clasificación)
 knn = KNN(k=5)  # Instancia de k-NN con k=5
@@ -92,10 +86,10 @@ plot_clusters(X_blobs, y_pred_kmeans, "k-Means Clustering")  # Visualiza los res
 # 4. DBSCAN (Clustering basado en densidad)
 def dbscan(X, eps=0.5, min_samples=5):
     """
-    Implementación simplificada de DBSCAN.
+    Implementación simplificada de DBSCAN (Density-Based Spatial Clustering of Applications with Noise).
     """
     neigh = NearestNeighbors(n_neighbors=min_samples)  # Encuentra vecinos cercanos
-    neigh.fit(X)
+    neigh.fit(X)  # Ajusta el modelo a los datos
     distances = np.sort(neigh.kneighbors()[0][:, -1])  # Distancias al vecino más lejano
     
     # Determinación automática de épsilon (opcional)

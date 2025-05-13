@@ -95,24 +95,36 @@ plt.title("Comparación de Pérdidas")
 
 # Función para graficar las fronteras de decisión
 def plot_decision_boundary(X, y, W1, W2, activation_fn, ax, title):
-    # Crear una malla de puntos en el espacio de entrada
-    x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5
-    y_min, y_max = X[:, 1].min() - 0.5, X[:, 1].max() + 0.5
-    xx, yy = np.meshgrid(np.linspace(x_min, x_max, 100),
-                         np.linspace(y_min, y_max, 100))
+    """
+    Función para graficar las fronteras de decisión de un modelo de red neuronal.
+    Parámetros:
+    - X: Datos de entrada (matriz de características).
+    - y: Etiquetas de las clases (0 o 1).
+    - W1: Pesos de la capa oculta (matriz de pesos entre entrada y capa oculta).
+    - W2: Pesos de la capa de salida (matriz de pesos entre capa oculta y salida).
+    - activation_fn: Función de activación utilizada en la capa oculta.
+    - ax: Objeto de ejes de Matplotlib donde se graficará.
+    - title: Título del gráfico.
+    """
+    
+    # Crear una malla de puntos en el espacio de entrada para evaluar el modelo
+    x_min, x_max = X[:, 0].min() - 0.5, X[:, 0].max() + 0.5  # Límites del eje x
+    y_min, y_max = X[:, 1].min() - 0.5, X[:, 1].max() + 0.5  # Límites del eje y
+    xx, yy = np.meshgrid(np.linspace(x_min, x_max, 100),  # Crear una cuadrícula de puntos
+                         np.linspace(y_min, y_max, 100))  # 100 puntos en cada eje
     
     # Calcular las salidas de la red para cada punto de la malla
-    Z = np.c_[xx.ravel(), yy.ravel()]
-    z1 = Z @ W1
-    a1 = activation_fn(z1)
-    z2 = a1 @ W2
-    a2 = sigmoid(z2)
-    Z = a2.reshape(xx.shape)
+    Z = np.c_[xx.ravel(), yy.ravel()]  # Combinar las coordenadas de la malla en un arreglo bidimensional
+    z1 = Z @ W1  # Producto punto entre los puntos de la malla y los pesos de la capa oculta
+    a1 = activation_fn(z1)  # Aplicar la función de activación en la capa oculta
+    z2 = a1 @ W2  # Producto punto entre las salidas de la capa oculta y los pesos de la capa de salida
+    a2 = sigmoid(z2)  # Aplicar la función sigmoide para obtener la probabilidad de la clase
+    Z = a2.reshape(xx.shape)  # Reorganizar las salidas en la forma de la malla original
     
     # Graficar las fronteras de decisión
-    ax.contourf(xx, yy, Z > 0.5, alpha=0.3, cmap=plt.cm.RdYlBu)
-    ax.scatter(X[:, 0], X[:, 1], c=y, edgecolors='k', cmap=plt.cm.RdYlBu)
-    ax.set_title(title)
+    ax.contourf(xx, yy, Z > 0.5, alpha=0.3, cmap=plt.cm.RdYlBu)  # Colorear las regiones según la clase predicha
+    ax.scatter(X[:, 0], X[:, 1], c=y, edgecolors='k', cmap=plt.cm.RdYlBu)  # Graficar los puntos de datos originales
+    ax.set_title(title)  # Establecer el título del gráfico
 
 # Gráficos de fronteras de decisión (subplots 2-4)
 fn_names = list(results.keys())

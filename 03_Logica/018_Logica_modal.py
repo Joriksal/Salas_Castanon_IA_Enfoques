@@ -1,4 +1,3 @@
-from typing import Dict, List, Set, Tuple, Callable
 
 # Clase que representa un modelo de Kripke, utilizado en lógica modal
 class ModeloKripke:

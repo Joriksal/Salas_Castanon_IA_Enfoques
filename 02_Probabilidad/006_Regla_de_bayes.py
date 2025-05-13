@@ -1,5 +1,3 @@
-import numpy as np
-
 class MedicalDiagnosisSystem:
     def __init__(self):
         """

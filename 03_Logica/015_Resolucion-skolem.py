@@ -1,4 +1,4 @@
-from typing import List, Dict, Union
+from typing import List, Union
 
 class SkolemResolver:
     def __init__(self):

@@ -1,56 +1,76 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+# Importamos las librerías necesarias
+import numpy as np  # Librería para cálculos numéricos y manejo de matrices
+import matplotlib.pyplot as plt  # Librería para graficar y mostrar imágenes
+from mpl_toolkits.mplot3d import Axes3D  # Herramientas para gráficos en 3D (no se usa en este código, pero podría ser útil)
 
 # Clase para representar un vector en 3D
 class Vector3:
     def __init__(self, x, y, z):
+        # Constructor que inicializa las coordenadas del vector
         self.x = x
         self.y = y
         self.z = z
     
-    # Producto punto entre dos vectores
     def dot(self, other):
+        # Producto punto entre dos vectores (multiplicación escalar)
+        # Fórmula: x1*x2 + y1*y2 + z1*z2
         return self.x*other.x + self.y*other.y + self.z*other.z
     
-    # Normalización del vector (convertirlo en un vector unitario)
     def normalize(self):
-        length = np.sqrt(self.dot(self))
+        # Normalización del vector: convierte el vector en uno unitario (longitud = 1)
+        # Fórmula: dividir cada componente por la longitud del vector
+        length = np.sqrt(self.dot(self))  # Longitud del vector (raíz cuadrada del producto punto consigo mismo)
         return Vector3(self.x/length, self.y/length, self.z/length)
 
 # Clase para representar una esfera en la escena
 class Sphere:
     def __init__(self, center, radius, color, emission=0):
-        self.center = center  # Centro de la esfera
+        # Constructor que inicializa las propiedades de la esfera
+        self.center = center  # Centro de la esfera (Vector3)
         self.radius = radius  # Radio de la esfera
-        self.color = color    # Color de la esfera
+        self.color = color    # Color de la esfera (Vector3)
         self.emission = emission  # Intensidad de emisión de luz (si es una fuente de luz)
 
 # Genera una dirección aleatoria uniforme dentro de una esfera unitaria
 def random_in_unit_sphere():
-    """Genera dirección aleatoria uniforme en esfera unitaria (para muestreo de luz)"""
+    """
+    Genera una dirección aleatoria uniforme dentro de una esfera unitaria.
+    Esto se utiliza para simular rebotes de luz difusos.
+    """
     while True:
+        # Generar un punto aleatorio en el espacio 3D con coordenadas entre -1 y 1
         p = Vector3(np.random.uniform(-1,1), np.random.uniform(-1,1), np.random.uniform(-1,1))
-        if p.dot(p) < 1:  # Verifica que el punto esté dentro de la esfera
-            return p.normalize()
+        if p.dot(p) < 1:  # Verifica que el punto esté dentro de la esfera (longitud < 1)
+            return p.normalize()  # Normaliza el vector antes de devolverlo
 
 # Función principal para trazar un rayo en la escena
 def trace_ray(origin, direction, spheres, depth=0, max_depth=3):
-    """Traza un rayo usando Monte Carlo"""
-    if depth >= max_depth:  # Limita la profundidad de los rebotes
-        return Vector3(0,0,0)  # Devuelve negro si se alcanza la profundidad máxima
+    """
+    Traza un rayo en la escena para calcular el color de un píxel.
+    Utiliza el método Monte Carlo para simular rebotes de luz.
     
-    # Buscar la intersección más cercana con las esferas
-    closest_t = np.inf
-    hit_sphere = None
+    Parámetros:
+    - origin: Origen del rayo (Vector3)
+    - direction: Dirección del rayo (Vector3)
+    - spheres: Lista de esferas en la escena
+    - depth: Profundidad actual del rayo (número de rebotes)
+    - max_depth: Máxima profundidad permitida para los rebotes
+    """
+    if depth >= max_depth:  # Si se alcanza la profundidad máxima, devolver negro
+        return Vector3(0,0,0)
+    
+    # Buscar la intersección más cercana entre el rayo y las esferas
+    closest_t = np.inf  # Distancia más cercana inicializada como infinito
+    hit_sphere = None  # Esfera que el rayo golpea más cerca
     for sphere in spheres:
         # Vector desde el origen del rayo al centro de la esfera
         oc = Vector3(origin.x-sphere.center.x, origin.y-sphere.center.y, origin.z-sphere.center.z)
-        a = direction.dot(direction)
-        b = 2.0 * oc.dot(direction)
-        c = oc.dot(oc) - sphere.radius*sphere.radius
-        discriminant = b*b - 4*a*c  # Fórmula cuadrática para intersección
-        if discriminant > 0:  # Si hay intersección
+        # Coeficientes de la ecuación cuadrática para intersección
+        a = direction.dot(direction)  # a = dirección del rayo al cuadrado
+        b = 2.0 * oc.dot(direction)  # b = 2 * (oc · dirección)
+        c = oc.dot(oc) - sphere.radius*sphere.radius  # c = (oc · oc) - radio^2
+        discriminant = b*b - 4*a*c  # Discriminante de la ecuación cuadrática
+        if discriminant > 0:  # Si el discriminante es positivo, hay intersección
             t = (-b - np.sqrt(discriminant)) / (2*a)  # Solución más cercana
             if t < closest_t and t > 0.001:  # Ignorar intersecciones detrás del origen
                 closest_t = t
@@ -85,7 +105,7 @@ def trace_ray(origin, direction, spheres, depth=0, max_depth=3):
     
     # Atenuar el color por el color de la esfera y el ángulo del rayo
     attenuation = hit_sphere.color
-    cos_theta = new_dir.dot(normal)
+    cos_theta = new_dir.dot(normal)  # Ángulo entre el rayo y la normal
     return Vector3(
         color.x * attenuation.x * cos_theta,
         color.y * attenuation.y * cos_theta,

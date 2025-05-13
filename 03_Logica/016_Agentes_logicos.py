@@ -1,5 +1,4 @@
-from typing import List, Dict, Tuple, Optional
-import random
+from typing import Dict, Optional
 
 class Ambiente:
     """Simula un entorno con estados, percepciones y reglas físicas."""
