@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict  # Para crear diccionarios con valores por defecto, útiles para almacenar hechos y relaciones en el conocimiento de fondo.
 
 # Clase que implementa el algoritmo FOIL para aprender reglas lógicas.
 class FOIL:

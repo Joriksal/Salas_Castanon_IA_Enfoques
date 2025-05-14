@@ -1,4 +1,4 @@
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, List, Set, Tuple, Optional  # Para definir tipos de datos como diccionarios, listas, conjuntos, tuplas y valores opcionales, mejorando la legibilidad y el control de tipos.
 
 class SistemaNoMonotonico:
     def __init__(self):

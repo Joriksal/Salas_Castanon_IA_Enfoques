@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional  # Para definir tipos de datos como diccionarios y valores opcionales, mejorando la legibilidad y el control de tipos.
 
 class Ambiente:
     """Simula un entorno con estados, percepciones y reglas físicas."""

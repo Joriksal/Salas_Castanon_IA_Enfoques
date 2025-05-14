@@ -1,5 +1,5 @@
-import numpy as np
-from sklearn.tree import DecisionTreeClassifier
+import numpy as np  # Para realizar operaciones matemáticas avanzadas y manejo eficiente de arreglos multidimensionales.
+from sklearn.tree import DecisionTreeClassifier  # Para implementar clasificadores débiles basados en árboles de decisión de profundidad 1.
 
 class AdaBoost:
     """Implementación de AdaBoost para clasificación binaria."""

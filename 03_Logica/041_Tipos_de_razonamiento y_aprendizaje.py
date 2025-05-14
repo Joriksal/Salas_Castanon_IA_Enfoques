@@ -1,5 +1,5 @@
-import numpy as np
-from sklearn.feature_extraction import DictVectorizer
+import numpy as np  # Para realizar operaciones matemáticas avanzadas y generar valores aleatorios, como en el aprendizaje por refuerzo.
+from sklearn.feature_extraction import DictVectorizer  # Para convertir datos categóricos (como síntomas) en vectores numéricos para su procesamiento.
 
 class DoctorCabron:
     def __init__(self):

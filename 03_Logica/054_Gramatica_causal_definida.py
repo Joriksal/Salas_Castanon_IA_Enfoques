@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict  # Para crear diccionarios con valores por defecto, útiles para almacenar reglas causales donde cada clave tiene una lista de efectos asociados.
 
 class CausalGrammar:
     def __init__(self):

@@ -1,4 +1,4 @@
-from typing import List, Set, Tuple
+from typing import List, Set, Tuple  # Para definir tipos de datos como listas, conjuntos y tuplas, mejorando la legibilidad y el control de tipos.
 
 class DefaultLogicSystem:
     def __init__(self):

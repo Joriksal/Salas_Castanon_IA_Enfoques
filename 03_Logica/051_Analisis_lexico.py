@@ -1,4 +1,4 @@
-import re
+import re  # Para trabajar con expresiones regulares, utilizadas para definir y buscar patrones de tokens en el código fuente.
 
 # Definimos los patrones de los tokens
 # Cada token tiene un nombre (como 'NUMBER', 'ASSIGN', etc.) y un patrón regex asociado

@@ -1,7 +1,7 @@
-import numpy as np
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.linear_model import LinearRegression
-from sklearn.base import BaseEstimator, RegressorMixin
+import numpy as np  # Para realizar operaciones matemáticas avanzadas y manejo eficiente de arreglos multidimensionales.
+from sklearn.tree import DecisionTreeRegressor  # Para implementar árboles de decisión para tareas de regresión.
+from sklearn.linear_model import LinearRegression  # Para realizar regresión lineal en las hojas del árbol M5.
+from sklearn.base import BaseEstimator, RegressorMixin  # Para crear un estimador personalizado compatible con scikit-learn.
 
 class M5RegressionTree(BaseEstimator, RegressorMixin):
     """Implementación personalizada del árbol M5 para regresión.

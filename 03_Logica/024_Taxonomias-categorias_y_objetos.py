@@ -1,5 +1,5 @@
-import networkx as nx
-import matplotlib.pyplot as plt
+import networkx as nx  # Para crear y manipular grafos dirigidos, como la representación de jerarquías o taxonomías.
+import matplotlib.pyplot as plt  # Para graficar y visualizar datos, como la estructura de la taxonomía.
 
 # Definimos la taxonomía como relaciones de jerarquía: padre -> hijos
 # Cada clave representa una categoría padre, y su valor es una lista de subcategorías u objetos hijos.

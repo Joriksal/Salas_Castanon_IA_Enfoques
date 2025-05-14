@@ -1,6 +1,6 @@
-from rdflib import Graph, Literal, RDF, RDFS, Namespace
-import networkx as nx
-import matplotlib.pyplot as plt
+from rdflib import Graph, Literal, RDF, RDFS, Namespace  # Para crear y manipular grafos RDF, definir clases, propiedades y espacios de nombres en ontologías.
+import networkx as nx  # Para crear y visualizar grafos dirigidos, como la representación de ontologías.
+import matplotlib.pyplot as plt  # Para graficar y visualizar datos, como la estructura de la ontología.
 
 # Crear espacio de nombres para los términos de la ontología
 # Este espacio de nombres define un prefijo "ex" para los recursos relacionados con animales

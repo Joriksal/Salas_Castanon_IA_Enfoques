@@ -1,4 +1,4 @@
-from typing import List, Dict, Set, Tuple, Optional
+from typing import List, Dict, Set, Tuple, Optional  # Para definir tipos de datos como listas, diccionarios, conjuntos, tuplas y valores opcionales, mejorando la legibilidad y el control de tipos.
 
 # ----------------------------- Estructuras de Datos -----------------------------
 class Action:

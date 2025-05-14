@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np  # Para realizar operaciones matemáticas avanzadas y manejo eficiente de arreglos multidimensionales.
 
 class AQAlgorithm:
     def __init__(self):

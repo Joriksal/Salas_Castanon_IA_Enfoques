@@ -1,4 +1,4 @@
-from typing import Set, List, Dict, Optional, Union
+from typing import Set, List, Dict, Optional, Union  # Para definir tipos de datos como conjuntos, listas, diccionarios, valores opcionales y uniones de tipos, mejorando la legibilidad y el control de tipos.
 
 # ----------------------------- Definiciones Básicas -----------------------------
 class StripsAction:

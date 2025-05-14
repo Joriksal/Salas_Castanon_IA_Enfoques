@@ -1,4 +1,4 @@
-from lark import Lark, Transformer, Tree, v_args
+from lark import Lark, Transformer, v_args  # Para definir gramáticas, analizar cadenas, transformar árboles sintácticos y trabajar con análisis sintáctico estructurado.
 
 # ---------------------------------------
 # 1. Gramática formal: expresiones lógicas y aritméticas
