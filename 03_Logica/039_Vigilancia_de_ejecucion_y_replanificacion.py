@@ -1,17 +1,22 @@
-import time
-from random import random
-from collections import deque, defaultdict
+# Importamos las librerías necesarias.
+import time  # Para simular tiempos de ejecución y medir tiempos.
+from random import random  # Para generar números aleatorios y simular probabilidades de éxito.
+from collections import deque, defaultdict  # Para estructuras de datos útiles como colas y diccionarios con valores por defecto.
 
+# Definimos la clase principal que gestiona la ejecución robusta de planes.
 class RobustExecutionMonitor:
     def __init__(self):
-        # Definición de operadores con precondiciones, efectos, tasas de éxito y costos.
-        # Estos operadores representan acciones que el robot puede realizar.
+        """
+        Constructor de la clase. Define los operadores disponibles para el sistema.
+        Cada operador representa una acción que el robot puede realizar, con sus precondiciones,
+        efectos, tasa de éxito y costo asociado.
+        """
         self.operators = {
             # Operadores básicos de movimiento entre ubicaciones.
             "Mover_A_B": {
                 "preconditions": ["RobotEnA"],  # Condiciones necesarias para ejecutar la acción.
                 "effects": {"add": ["RobotEnB"], "remove": ["RobotEnA"]},  # Cambios en el estado tras la acción.
-                "success_rate": 0.8,  # Probabilidad de éxito.
+                "success_rate": 0.8,  # Probabilidad de éxito de la acción.
                 "cost": 1  # Costo asociado a la acción.
             },
             "Mover_B_C": {
@@ -66,9 +71,21 @@ class RobustExecutionMonitor:
     def apply_operator(self, state, operator):
         """
         Aplica un operador al estado actual.
-        Devuelve el nuevo estado, si tuvo éxito, y el operador ejecutado.
+        - Verifica si las precondiciones del operador se cumplen.
+        - Simula la ejecución del operador con base en su tasa de éxito.
+        - Aplica los efectos del operador al estado si tiene éxito.
+        - Si el operador tiene un paso encadenado, lo ejecuta automáticamente.
+        
+        Parámetros:
+        - state: El estado actual del sistema (conjunto de condiciones).
+        - operator: El operador que se desea aplicar.
+        
+        Retorna:
+        - El nuevo estado (si tuvo éxito).
+        - Un indicador de éxito o fallo.
+        - El operador ejecutado.
         """
-        op = self.operators.get(operator, {})
+        op = self.operators.get(operator, {})  # Obtener los detalles del operador.
         if not op:
             return set(state), False, operator  # Operador no encontrado.
             
@@ -95,7 +112,14 @@ class RobustExecutionMonitor:
     def find_alternative_actions(self, state, failed_op=None):
         """
         Encuentra acciones alternativas que se pueden ejecutar desde el estado actual.
-        Las acciones se ordenan por costo.
+        Las acciones se ordenan por costo para priorizar las más económicas.
+        
+        Parámetros:
+        - state: El estado actual del sistema.
+        - failed_op: El operador que falló (opcional, para evitar repetirlo).
+        
+        Retorna:
+        - Una lista de operadores alternativos ordenados por costo.
         """
         alternatives = []
         for op_name, op in self.operators.items():
@@ -109,6 +133,16 @@ class RobustExecutionMonitor:
         """
         Realiza una replanificación robusta para alcanzar el objetivo desde el estado actual.
         Usa una búsqueda con profundidad limitada y evita ciclos.
+        
+        Parámetros:
+        - goal: El objetivo que se desea alcanzar.
+        - state: El estado actual del sistema.
+        - failed_op: El operador que falló (opcional).
+        - depth: Profundidad máxima de búsqueda.
+        - visited: Conjunto de estados visitados para evitar ciclos.
+        
+        Retorna:
+        - Un nuevo plan (lista de acciones) o None si no se encuentra un plan viable.
         """
         if visited is None:
             visited = set()
@@ -142,6 +176,15 @@ class RobustExecutionMonitor:
         """
         Ejecuta un plan con monitorización avanzada.
         Si una acción falla, intenta replanificar para alcanzar el objetivo.
+        
+        Parámetros:
+        - goal: El objetivo que se desea alcanzar.
+        - initial_plan: El plan inicial (lista de acciones).
+        - initial_state: El estado inicial del sistema.
+        - max_attempts: Número máximo de intentos para alcanzar el objetivo.
+        
+        Retorna:
+        - True si el objetivo se alcanza, False en caso contrario.
         """
         history = defaultdict(int)  # Historial de ejecuciones de operadores.
         state = set(initial_state)  # Estado inicial.

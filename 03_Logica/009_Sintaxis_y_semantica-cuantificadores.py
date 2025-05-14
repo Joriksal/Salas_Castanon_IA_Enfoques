@@ -1,7 +1,7 @@
 def evaluar_formula(formula, dominio, interpretacion):
     """
     Evalúa una fórmula lógica con cuantificadores (∀, ∃) en un dominio finito.
-    
+
     Args:
         formula: Diccionario que representa la fórmula lógica. Ejemplo:
                  {"tipo": "∀", "var": "x", "subformula": ...}.
@@ -9,65 +9,76 @@ def evaluar_formula(formula, dominio, interpretacion):
                  Ejemplo: [1, 2, 3].
         interpretacion: Función que evalúa predicados atómicos. Ejemplo:
                         lambda atomica: atomica == ("P", 3).
-    
+
     Returns:
         True o False dependiendo de si la fórmula es verdadera en el dominio.
     """
-    tipo = formula["tipo"]  # Tipo de fórmula: atómica, cuantificador, o conector lógico.
-    
-    # Caso base: fórmula atómica (ejemplo: P(x)).
+    # Extraemos el tipo de la fórmula (puede ser atómica, cuantificador o conector lógico).
+    tipo = formula["tipo"]
+
+    # Caso base: si la fórmula es atómica (ejemplo: P(x)).
     if tipo == "atomica":
+        # Evaluamos el predicado atómico utilizando la función de interpretación.
         return interpretacion(formula["predicado"])
-    
-    # Conectores lógicos: "no" (¬), "y" (∧), "o" (∨).
-    elif tipo == "no":  # Negación lógica.
+
+    # Caso: conectores lógicos.
+    elif tipo == "no":  # Negación lógica (¬φ).
+        # Evaluamos la subfórmula y devolvemos su negación.
         return not evaluar_formula(formula["subformula"], dominio, interpretacion)
-    elif tipo == "y":  # Conjunción lógica.
+    elif tipo == "y":  # Conjunción lógica (φ ∧ ψ).
+        # Evaluamos ambas subfórmulas y devolvemos True si ambas son verdaderas.
         return evaluar_formula(formula["subformula1"], dominio, interpretacion) and \
                evaluar_formula(formula["subformula2"], dominio, interpretacion)
-    elif tipo == "o":  # Disyunción lógica.
+    elif tipo == "o":  # Disyunción lógica (φ ∨ ψ).
+        # Evaluamos ambas subfórmulas y devolvemos True si al menos una es verdadera.
         return evaluar_formula(formula["subformula1"], dominio, interpretacion) or \
                evaluar_formula(formula["subformula2"], dominio, interpretacion)
-    
-    # Cuantificador universal (∀x φ): la fórmula debe ser verdadera para todos los elementos del dominio.
+
+    # Caso: cuantificador universal (∀x φ).
     elif tipo == "∀":
+        # Iteramos sobre todos los elementos del dominio.
         for elemento in dominio:
             # Sustituimos la variable en la subfórmula por el elemento actual del dominio.
             subformula_evaluada = sustituir_variable(formula["subformula"], formula["var"], elemento)
             # Si la subfórmula no es verdadera para algún elemento, retornamos False.
             if not evaluar_formula(subformula_evaluada, dominio, interpretacion):
                 return False
-        return True  # Si es verdadera para todos los elementos, retornamos True.
-    
-    # Cuantificador existencial (∃x φ): la fórmula es verdadera si al menos un elemento del dominio la satisface.
+        # Si es verdadera para todos los elementos, retornamos True.
+        return True
+
+    # Caso: cuantificador existencial (∃x φ).
     elif tipo == "∃":
+        # Iteramos sobre todos los elementos del dominio.
         for elemento in dominio:
             # Sustituimos la variable en la subfórmula por el elemento actual del dominio.
             subformula_evaluada = sustituir_variable(formula["subformula"], formula["var"], elemento)
             # Si la subfórmula es verdadera para algún elemento, retornamos True.
             if evaluar_formula(subformula_evaluada, dominio, interpretacion):
                 return True
-        return False  # Si no es verdadera para ningún elemento, retornamos False.
+        # Si no es verdadera para ningún elemento, retornamos False.
+        return False
+
 
 def sustituir_variable(formula, variable, valor):
     """
     Sustituye una variable en una fórmula por un valor concreto.
-    
+
     Args:
         formula: Diccionario que representa la fórmula lógica.
         variable: Nombre de la variable a sustituir (ejemplo: "x").
         valor: Valor con el que se sustituirá la variable (ejemplo: 3).
-    
+
     Returns:
         Una nueva fórmula con la variable sustituida por el valor.
     """
+    # Caso base: si la fórmula es atómica.
     if formula["tipo"] == "atomica":
-        # Reemplaza la variable en el predicado atómico.
+        # Reemplazamos la variable en el predicado atómico.
         # Ejemplo: ("P", "x") → ("P", 3).
         nuevo_predicado = tuple(valor if x == variable else x for x in formula["predicado"])
         return {"tipo": "atomica", "predicado": nuevo_predicado}
     else:
-        # Aplica recursivamente la sustitución a las subfórmulas.
+        # Caso recursivo: aplicamos la sustitución a las subfórmulas.
         nueva_formula = formula.copy()
         if "subformula" in nueva_formula:
             nueva_formula["subformula"] = sustituir_variable(formula["subformula"], variable, valor)
@@ -77,9 +88,11 @@ def sustituir_variable(formula, variable, valor):
             nueva_formula["subformula2"] = sustituir_variable(formula["subformula2"], variable, valor)
         return nueva_formula
 
+
 # --- Ejemplo de uso ---
 if __name__ == "__main__":
     # Dominio: {1, 2, 3}.
+    # Este es el conjunto de valores sobre los que se evaluará la fórmula.
     dominio = [1, 2, 3]
     
     # Fórmula: ∃x (x > 2).
@@ -96,9 +109,13 @@ if __name__ == "__main__":
     # Interpretación: Define cómo se evalúan los predicados atómicos.
     # En este caso, ">" se interpreta como la operación mayor que.
     def interpretacion(predicado):
+        # Verificamos si el predicado es una comparación "mayor que".
         if predicado[0] == ">":
+            # Evaluamos si el primer elemento es mayor que el segundo.
             return predicado[1] > predicado[2]  # Ejemplo: (">", 3, 2) → True.
     
     # Evaluación de la fórmula en el dominio con la interpretación dada.
     resultado = evaluar_formula(formula, dominio, interpretacion)
+    # Mostramos el resultado de la evaluación.
     print(f"La fórmula ∃x (x > 2) es {resultado} en el dominio {dominio}")
+    # Salida esperada: "La fórmula ∃x (x > 2) es True en el dominio [1, 2, 3]"

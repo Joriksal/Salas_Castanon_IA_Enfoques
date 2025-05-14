@@ -2,56 +2,74 @@ from typing import List, Set, Tuple
 
 class DefaultLogicSystem:
     def __init__(self):
-        # Conjunto de hechos conocidos (hard facts)
-        self.facts: Set[str] = set()
-        # Lista de reglas por defecto: (prerrequisito, justificaciones, conclusión)
-        self.default_rules: List[Tuple[str, List[str], str]] = []
-        # Conjunto de restricciones: pares de proposiciones incompatibles
-        self.constraints: Set[Tuple[str, str]] = set()
+        """
+        Inicializa el sistema de lógica por defecto con las siguientes estructuras:
+        - `facts`: Conjunto de hechos conocidos (hard facts), es decir, proposiciones que se consideran verdaderas.
+        - `default_rules`: Lista de reglas por defecto en forma de tuplas (prerrequisito, justificaciones, conclusión).
+        - `constraints`: Conjunto de restricciones que definen pares de proposiciones incompatibles.
+        """
+        self.facts: Set[str] = set()  # Conjunto de hechos conocidos
+        self.default_rules: List[Tuple[str, List[str], str]] = []  # Lista de reglas por defecto
+        self.constraints: Set[Tuple[str, str]] = set()  # Restricciones entre proposiciones incompatibles
 
     def add_fact(self, fact: str):
-        """Agrega un hecho al conjunto de hechos conocidos."""
-        self.facts.add(fact)
-        self._validate_extension()
+        """
+        Agrega un hecho al conjunto de hechos conocidos.
+        - Los hechos son proposiciones que se consideran verdaderas sin necesidad de justificación.
+        """
+        self.facts.add(fact)  # Añadimos el hecho al conjunto
+        self._validate_extension()  # Validamos que no haya conflictos con las restricciones
 
     def add_default(self, prerequisite: str, justifications: List[str], conclusion: str):
-        """Agrega una regla por defecto al sistema."""
-        self.default_rules.append((prerequisite, justifications, conclusion))
-        self._validate_extension()
+        """
+        Agrega una regla por defecto al sistema.
+        - Una regla por defecto tiene:
+          - `prerequisite`: Una condición que debe cumplirse para aplicar la regla.
+          - `justifications`: Una lista de proposiciones que no deben estar presentes para aplicar la regla.
+          - `conclusion`: La proposición que se deriva si se cumplen las condiciones.
+        """
+        self.default_rules.append((prerequisite, justifications, conclusion))  # Añadimos la regla
+        self._validate_extension()  # Validamos que no haya conflictos con las restricciones
 
     def add_constraint(self, prop1: str, prop2: str):
-        """Define dos proposiciones como incompatibles."""
-        self.constraints.add((prop1, prop2))
+        """
+        Define dos proposiciones como incompatibles.
+        - Si ambas proposiciones están presentes en el mismo conjunto, se considera un conflicto.
+        """
+        self.constraints.add((prop1, prop2))  # Añadimos la restricción en ambas direcciones
         self.constraints.add((prop2, prop1))
-        self._validate_extension()
+        self._validate_extension()  # Validamos que no haya conflictos con las restricciones
 
     def _validate_extension(self) -> bool:
-        """Valida que no haya conflictos entre los hechos actuales y las restricciones."""
+        """
+        Valida que no haya conflictos entre los hechos actuales y las restricciones.
+        - Si dos proposiciones incompatibles están presentes en los hechos, se considera un conflicto.
+        """
         for prop1, prop2 in self.constraints:
             if prop1 in self.facts and prop2 in self.facts:
                 return False  # Hay un conflicto
-        return True
+        return True  # No hay conflictos
 
     def get_extensions(self) -> List[Set[str]]:
         """
         Calcula todas las extensiones posibles usando el algoritmo de Reiter.
-        Una extensión es un conjunto consistente de hechos que incluye conclusiones derivadas.
+        - Una extensión es un conjunto consistente de hechos que incluye conclusiones derivadas.
         """
-        extensions = [self.facts.copy()]  # Comienza con los hechos conocidos
+        extensions = [self.facts.copy()]  # Comenzamos con los hechos conocidos como base
         
-        # Procesa cada regla por defecto
+        # Procesamos cada regla por defecto
         for pre, justs, conc in self.default_rules:
-            new_extensions = []
+            new_extensions = []  # Lista para almacenar nuevas extensiones
             
             for ext in extensions:
-                # Verifica si el prerrequisito está en la extensión y las justificaciones no bloquean
+                # Verificamos si el prerrequisito está en la extensión y las justificaciones no bloquean
                 if pre in ext and all(just not in ext for just in justs):
                     
-                    # Crea una nueva extensión candidata
+                    # Creamos una nueva extensión candidata
                     candidate = ext.copy()
-                    candidate.add(conc)
+                    candidate.add(conc)  # Añadimos la conclusión derivada
                     
-                    # Verifica que no haya conflictos con las restricciones
+                    # Verificamos que no haya conflictos con las restricciones
                     valid = True
                     for prop1, prop2 in self.constraints:
                         if prop1 in candidate and prop2 in candidate:
@@ -59,12 +77,12 @@ class DefaultLogicSystem:
                             break
                     
                     if valid:
-                        new_extensions.append(candidate)
+                        new_extensions.append(candidate)  # Añadimos la extensión válida
             
-            # Agrega las nuevas extensiones
+            # Agregamos las nuevas extensiones a la lista de extensiones
             extensions += new_extensions
         
-        # Elimina duplicados y extensiones no máximas
+        # Eliminamos duplicados y extensiones no máximas
         unique_extensions = []
         for ext in extensions:
             if not any(ext < other for other in extensions):  # Extensiones no contenidas en otras
@@ -73,41 +91,48 @@ class DefaultLogicSystem:
         return unique_extensions
 
     def is_credulous(self, proposition: str) -> bool:
-        """Verifica si una proposición está en al menos una extensión."""
+        """
+        Verifica si una proposición está en al menos una extensión.
+        - Esto representa un razonamiento crédulo (aceptar si es posible).
+        """
         return any(proposition in ext for ext in self.get_extensions())
 
     def is_skeptical(self, proposition: str) -> bool:
-        """Verifica si una proposición está en todas las extensiones."""
+        """
+        Verifica si una proposición está en todas las extensiones.
+        - Esto representa un razonamiento escéptico (aceptar solo si es cierto en todos los casos).
+        """
         extensions = self.get_extensions()
         return all(proposition in ext for ext in extensions) if extensions else False
 
 # ------------------------------------------
-# Ejemplo: Sistema de diagnóstico médico
+# Ejemplo: Sistema de lógica por defecto
 # ------------------------------------------
 if __name__ == "__main__":
+    # Mensaje inicial
     print("=== Default Logic System ===")
-    system = DefaultLogicSystem()
+    system = DefaultLogicSystem()  # Creamos una instancia del sistema
     
     # 1. Definir reglas por defecto
     # Si algo es un pájaro y no es un pingüino, entonces vuela
     system.add_default(
-        prerequisite="bird(X)",
-        justifications=["-penguin(X)"],
-        conclusion="flies(X)"
+        prerequisite="bird(X)",  # Prerrequisito: ser un pájaro
+        justifications=["-penguin(X)"],  # Justificación: no ser un pingüino
+        conclusion="flies(X)"  # Conclusión: vuela
     )
     
     # Si algo es un pájaro y no está herido, entonces vuela
     system.add_default(
-        prerequisite="bird(X)",
-        justifications=["-injured(X)"],
-        conclusion="flies(X)"
+        prerequisite="bird(X)",  # Prerrequisito: ser un pájaro
+        justifications=["-injured(X)"],  # Justificación: no estar herido
+        conclusion="flies(X)"  # Conclusión: vuela
     )
     
     # Si algo es un pingüino, entonces no vuela
     system.add_default(
-        prerequisite="penguin(X)",
-        justifications=[],
-        conclusion="-flies(X)"
+        prerequisite="penguin(X)",  # Prerrequisito: ser un pingüino
+        justifications=[],  # Sin justificaciones adicionales
+        conclusion="-flies(X)"  # Conclusión: no vuela
     )
     
     # 2. Agregar restricciones
