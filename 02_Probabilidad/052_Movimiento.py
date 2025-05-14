@@ -1,6 +1,6 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from pykalman import KalmanFilter
+import numpy as np  # Para realizar operaciones matemáticas avanzadas y manejo eficiente de arreglos multidimensionales.
+import matplotlib.pyplot as plt  # Para crear gráficos y visualizar datos, como trayectorias y estimaciones.
+from pykalman import KalmanFilter  # Para implementar y aplicar el Filtro de Kalman en datos ruidosos.
 
 # 1. Datos simulados: Generación de la trayectoria real y observaciones ruidosas
 np.random.seed(42)  # Fijar la semilla para reproducibilidad

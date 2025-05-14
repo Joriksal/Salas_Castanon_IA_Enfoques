@@ -1,4 +1,7 @@
-from collections import defaultdict
+from collections import defaultdict  # Proporciona un diccionario con valores por defecto.
+                                     # Es útil para:
+                                     # - Contar las ocurrencias de palabras en el corpus sin necesidad de inicializar manualmente las claves.
+                                     # - Evitar errores al acceder a claves inexistentes, ya que devuelve un valor predeterminado (en este caso, 0).
 
 class PriorProbabilityEstimator:
     def __init__(self, laplace_smoothing=1):

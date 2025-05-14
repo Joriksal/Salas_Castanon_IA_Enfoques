@@ -1,6 +1,19 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import norm, uniform
+import numpy as np  # Librería para operaciones matemáticas y generación de números aleatorios.
+                    # Es útil para:
+                    # - Generar muestras aleatorias de distribuciones como normal y uniforme.
+                    # - Realizar cálculos matemáticos avanzados y operaciones vectorizadas.
+                    # - Calcular estadísticas como media, desviación estándar y autocorrelación.
+
+import matplotlib.pyplot as plt  # Librería para la visualización de datos.
+                                 # Es útil para:
+                                 # - Crear gráficos como histogramas y trayectorias de cadenas de Markov.
+                                 # - Comparar las muestras generadas con la distribución objetivo.
+                                 # - Personalizar visualizaciones (títulos, etiquetas, cuadrículas, etc.).
+
+from scipy.stats import norm, uniform  # Proporciona herramientas para trabajar con distribuciones estadísticas.
+                                       # Es útil para:
+                                       # - Definir distribuciones como normal (norm) y uniforme (uniform).
+                                       # - Calcular funciones de densidad de probabilidad (PDF) y generar valores aleatorios.
 
 # Definición de la distribución objetivo
 def target_distribution(x):

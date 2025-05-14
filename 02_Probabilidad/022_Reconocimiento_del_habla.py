@@ -1,8 +1,23 @@
-import numpy as np
-from hmmlearn import hmm  # Biblioteca para trabajar con modelos ocultos de Markov
-from python_speech_features import mfcc  # Para extraer características MFCC de audio
-import scipy.io.wavfile as wav  # Para leer archivos de audio WAV
-import os  # Para manejar rutas de archivos
+from hmmlearn import hmm  # Biblioteca para trabajar con modelos ocultos de Markov (HMM).
+                          # Es útil para:
+                          # - Crear y entrenar modelos HMM para reconocimiento de patrones.
+                          # - Ajustar parámetros del modelo usando el algoritmo de Baum-Welch.
+                          # - Calcular la probabilidad de secuencias observadas (log-likelihood).
+
+from python_speech_features import mfcc  # Biblioteca para extraer características de audio.
+                                         # Es útil para:
+                                         # - Calcular las características MFCC (Mel Frequency Cepstral Coefficients).
+                                         # - Representar las características acústicas de un archivo de audio.
+
+import scipy.io.wavfile as wav  # Módulo para leer y escribir archivos de audio WAV.
+                                # Es útil para:
+                                # - Leer archivos de audio y obtener la frecuencia de muestreo y la señal.
+                                # - Procesar datos de audio para análisis posterior.
+
+import os  # Biblioteca para manejar rutas y archivos del sistema.
+           # Es útil para:
+           # - Construir rutas de archivos de manera portátil.
+           # - Acceder a archivos de audio en directorios específicos.
 
 # Ruta absoluta donde se encuentran los archivos de audio (modifica según tu sistema)
 audio_dir = r"C:\Users\rikis\OneDrive\Documentos\GitHub\Salas_Castanon_IA_Enfoques\02_Probabilidad\audios"

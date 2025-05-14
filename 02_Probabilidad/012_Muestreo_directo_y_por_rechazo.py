@@ -1,6 +1,19 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import weibull_min
+import numpy as np  # Librería para operaciones matemáticas y generación de números aleatorios.
+                    # Es útil para:
+                    # - Generar muestras aleatorias de distribuciones como Gamma y Exponencial.
+                    # - Realizar cálculos matemáticos avanzados y operaciones vectorizadas.
+                    # - Evaluar condiciones y realizar comparaciones numéricas.
+
+import matplotlib.pyplot as plt  # Librería para la visualización de datos.
+                                 # Es útil para:
+                                 # - Crear gráficos como histogramas y curvas de densidad.
+                                 # - Configurar y personalizar visualizaciones (títulos, etiquetas, cuadrículas, etc.).
+                                 # - Comparar distribuciones generadas con funciones teóricas.
+
+from scipy.stats import weibull_min  # Proporciona herramientas para trabajar con distribuciones estadísticas.
+                                     # Es útil para:
+                                     # - Definir la distribución Weibull como objetivo en el muestreo por rechazo.
+                                     # - Calcular la función de densidad de probabilidad (PDF) y la función de distribución acumulativa (CDF).
 
 # =============================================
 # 1. MUESTREO DIRECTO: Distribución Gamma

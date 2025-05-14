@@ -1,6 +1,6 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from minisom import MiniSom  # Librería para SOM
+import numpy as np  # Para realizar operaciones matemáticas avanzadas y manejo eficiente de arreglos multidimensionales.
+import matplotlib.pyplot as plt  # Para crear gráficos y visualizar datos, como el mapa de distancias (U-Matrix).
+from minisom import MiniSom  # Para implementar y entrenar Mapas Autoorganizados de Kohonen (SOM).
 
 # 1. Datos de ejemplo: 1000 colores RGB aleatorios
 np.random.seed(42)  # Fijar la semilla para reproducibilidad

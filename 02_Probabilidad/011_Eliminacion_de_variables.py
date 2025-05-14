@@ -1,4 +1,8 @@
-import numpy as np
+import numpy as np  # Librería para operaciones matemáticas y manejo de arreglos numéricos.
+                    # Es útil para:
+                    # - Representar y manipular probabilidades como arreglos (vectores y matrices).
+                    # - Realizar cálculos eficientes con operaciones vectorizadas.
+                    # - Manejar estructuras de datos como matrices de probabilidades condicionales.
 
 # Probabilidades a priori de los componentes C1, C2 y C3
 # Estas representan la probabilidad de que cada componente esté en estado 0 (funcionando) o 1 (fallando)

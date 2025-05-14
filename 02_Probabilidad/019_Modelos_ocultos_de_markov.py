@@ -1,4 +1,8 @@
-import numpy as np
+import numpy as np  # Librería para operaciones matemáticas y manejo de arreglos numéricos.
+                    # Es útil para:
+                    # - Representar y manipular matrices como las de transición (A) y emisión (B).
+                    # - Realizar cálculos eficientes con operaciones vectorizadas.
+                    # - Calcular probabilidades hacia adelante y hacia atrás en el algoritmo.
 
 # --- Definir el HMM ---
 # Estados ocultos del modelo (fonemas + silencio)

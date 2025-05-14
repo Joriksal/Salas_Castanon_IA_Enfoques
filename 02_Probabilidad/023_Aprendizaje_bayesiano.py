@@ -1,5 +1,12 @@
-import numpy as np
-from collections import defaultdict
+import numpy as np  # Librería para operaciones matemáticas y manejo de arreglos numéricos.
+                    # Es útil para:
+                    # - Calcular logaritmos de probabilidades (np.log) para evitar underflow en multiplicaciones.
+                    # - Realizar cálculos eficientes con operaciones vectorizadas.
+
+from collections import defaultdict  # Proporciona un diccionario con valores por defecto.
+                                     # Es útil para:
+                                     # - Contar la frecuencia de palabras en cada clase ("spam" y "no_spam").
+                                     # - Evitar errores al acceder a claves inexistentes, ya que devuelve un valor predeterminado (en este caso, 0).
 
 class NaiveBayesSpamFilter:
     def __init__(self):

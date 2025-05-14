@@ -1,5 +1,9 @@
-import random  # Para generar números aleatorios.
-from copy import deepcopy  # Para realizar copias profundas de objetos.
+import random  # Se utiliza para generar números aleatorios, lo cual es útil para inicializar estados aleatorios
+               # y generar vecinos aleatorios en el espacio de búsqueda.
+
+from copy import deepcopy  # Permite realizar copias profundas de objetos, asegurando que las modificaciones
+                           # en las copias no afecten al objeto original. Es esencial para trabajar con estructuras
+                           # complejas como listas o diccionarios en algoritmos como la búsqueda tabú.
 
 class BusquedaTabu:
     def __init__(self, funcion_objetivo, generar_vecino, tamano_tabu=10, max_iter=100):

@@ -1,9 +1,9 @@
-import numpy as np
-from sklearn.datasets import fetch_openml
-from sklearn.naive_bayes import BernoulliNB
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-import matplotlib.pyplot as plt
+import numpy as np  # Para realizar operaciones matemáticas avanzadas y manejo eficiente de arreglos multidimensionales.
+from sklearn.datasets import fetch_openml  # Para cargar datasets desde OpenML, como el dataset MNIST.
+from sklearn.naive_bayes import BernoulliNB  # Para implementar el clasificador Naive Bayes con distribución Bernoulli (datos binarios).
+from sklearn.model_selection import train_test_split  # Para dividir los datos en conjuntos de entrenamiento y prueba.
+from sklearn.metrics import accuracy_score  # Para calcular métricas de evaluación, como la precisión del modelo.
+import matplotlib.pyplot as plt  # Para crear gráficos y visualizar datos, como imágenes de dígitos.
 
 # 1. Cargar dataset MNIST (dígitos 0-9)
 # El dataset MNIST contiene imágenes de dígitos escritos a mano (28x28 píxeles).

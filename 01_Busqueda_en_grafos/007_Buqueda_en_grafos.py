@@ -1,5 +1,8 @@
-from collections import deque  # Para manejar colas en BFS.
-import heapq  # Para manejar colas de prioridad en UCS.
+from collections import deque  # `deque` es una estructura de datos de doble extremo que permite operaciones rápidas de inserción y eliminación en ambos extremos. 
+                               # Es ideal para implementar colas en algoritmos como BFS (Búsqueda en Anchura), donde se necesita un comportamiento FIFO (First In, First Out).
+
+import heapq  # `heapq` proporciona una implementación de colas de prioridad basada en un heap binario.
+              # Es útil para algoritmos como UCS (Búsqueda de Costo Uniforme), donde se necesita extraer el elemento con el menor costo de manera eficiente (O(log n)).
 
 class BusquedaGrafo:
     def __init__(self, grafo):

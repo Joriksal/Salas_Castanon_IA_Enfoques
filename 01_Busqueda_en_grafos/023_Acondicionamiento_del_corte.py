@@ -1,4 +1,4 @@
-from collections import deque, defaultdict  # Importamos estructuras útiles para manejar colas y diccionarios con valores por defecto.
+from collections import deque  # Importamos estructuras útiles para manejar colas y diccionarios con valores por defecto.
 
 class CutConditioningScheduler:
     def __init__(self, cursos, profesores, aulas, horarios):

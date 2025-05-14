@@ -1,7 +1,29 @@
-import numpy as np
-from collections import defaultdict
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
+import numpy as np  # Librería para operaciones matemáticas y manejo de arreglos numéricos.
+                    # Es útil para:
+                    # - Realizar cálculos eficientes con operaciones vectorizadas.
+                    # - Calcular probabilidades, logaritmos y estadísticas como media y desviación estándar.
+
+from collections import defaultdict  # Proporciona un diccionario con valores por defecto.
+                                     # Es útil para:
+                                     # - Contar frecuencias de características por clase.
+                                     # - Evitar errores al acceder a claves inexistentes, ya que devuelve un valor predeterminado.
+
+from sklearn.model_selection import train_test_split  # Herramienta para dividir los datos en conjuntos de entrenamiento y prueba.
+                                                      # Es útil para:
+                                                      # - Evaluar el rendimiento del modelo en datos no vistos.
+                                                      # - Separar los datos en proporciones específicas (por ejemplo, 80% entrenamiento, 20% prueba).
+
+from sklearn.metrics import accuracy_score  # Herramienta para calcular métricas de evaluación.
+                                            # Es útil para:
+                                            # - Medir la precisión del modelo comparando predicciones con etiquetas reales.
+
+from sklearn.datasets import load_iris  # Proporciona acceso a datasets de ejemplo como Iris.
+                                        # Es útil para:
+                                        # - Cargar datos predefinidos para pruebas y demostraciones.
+
+from sklearn.preprocessing import KBinsDiscretizer  # Herramienta para discretizar características continuas.
+                                                    # Es útil para:
+                                                    # - Convertir datos continuos en datos categóricos (bins) para modelos que trabajan mejor con datos discretos.
 
 class NaiveBayesClassifier:
     def __init__(self, alpha=1.0):
@@ -87,9 +109,6 @@ class NaiveBayesClassifier:
         return np.array(predictions)
 
 # Ejemplo con dataset de flores Iris (discreto)
-from sklearn.datasets import load_iris
-from sklearn.preprocessing import KBinsDiscretizer
-
 # Cargar el dataset Iris
 iris = load_iris()
 X, y = iris.data, iris.target

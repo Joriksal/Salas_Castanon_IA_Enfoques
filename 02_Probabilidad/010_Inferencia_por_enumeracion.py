@@ -1,5 +1,12 @@
-import itertools
-from collections import defaultdict
+import itertools  # Proporciona herramientas para trabajar con iteradores y combinaciones.
+                  # Es útil para:
+                  # - Generar todas las combinaciones posibles de valores para las variables ocultas en el modelo.
+                  # - Facilitar la enumeración de asignaciones en la inferencia probabilística.
+
+from collections import defaultdict  # Proporciona un diccionario con valores por defecto.
+                                     # Es útil para:
+                                     # - Almacenar distribuciones de probabilidad inicializadas en 0.
+                                     # - Evitar errores al acceder a claves inexistentes, ya que devuelve un valor predeterminado.
 
 class MedicalDiagnosisSystem:
     def __init__(self):

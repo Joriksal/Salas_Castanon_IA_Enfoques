@@ -1,5 +1,14 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import numpy as np  # Librería para operaciones matemáticas y manejo de arreglos numéricos.
+                    # Es útil para:
+                    # - Realizar cálculos matriciales necesarios para el Filtro de Kalman (como multiplicaciones y transposiciones).
+                    # - Representar estados, covarianzas y matrices del modelo dinámico.
+                    # - Generar ruido aleatorio para simulaciones.
+
+import matplotlib.pyplot as plt  # Librería para la visualización de datos.
+                                 # Es útil para:
+                                 # - Graficar trayectorias reales, mediciones ruidosas, estados filtrados y suavizados.
+                                 # - Comparar resultados del Filtro de Kalman con datos reales.
+                                 # - Personalizar gráficos (títulos, etiquetas, leyendas, cuadrículas, etc.).
 
 class KalmanFilter:
     def __init__(self, initial_state, initial_uncertainty, F, H, Q, R):

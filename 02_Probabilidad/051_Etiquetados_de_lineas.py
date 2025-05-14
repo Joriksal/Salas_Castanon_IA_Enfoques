@@ -1,7 +1,7 @@
-import numpy as np
-from pgmpy.models import DiscreteBayesianNetwork
-from pgmpy.factors.discrete import TabularCPD
-from pgmpy.inference import VariableElimination
+import numpy as np  # Para realizar operaciones matemáticas avanzadas y manejo eficiente de arreglos multidimensionales.
+from pgmpy.models import DiscreteBayesianNetwork  # Para crear y trabajar con redes bayesianas discretas.
+from pgmpy.factors.discrete import TabularCPD  # Para definir Tablas de Probabilidad Condicional (CPDs) en redes bayesianas.
+from pgmpy.inference import VariableElimination  # Para realizar inferencia en redes bayesianas utilizando eliminación de variables.
 
 # 1. Definir la estructura de la red bayesiana
 # Cada tupla ('Nodo1', 'Nodo2') indica que Nodo1 es un padre de Nodo2.

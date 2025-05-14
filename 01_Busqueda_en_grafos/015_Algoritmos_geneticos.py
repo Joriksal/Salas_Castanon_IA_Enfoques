@@ -1,7 +1,22 @@
-import random  # Para generar números aleatorios y realizar selecciones aleatorias
-import numpy as np  # Para operaciones matemáticas y manejo de arreglos
-from operator import itemgetter  # Para acceder a elementos específicos en tuplas
-from math import sin, cos
+import random  # Se utiliza para generar números aleatorios, lo cual es esencial para:
+               # - Inicializar la población de manera aleatoria.
+               # - Seleccionar individuos para cruce y mutación.
+               # - Generar factores aleatorios en el cruce y mutación.
+
+import numpy as np  # Proporciona herramientas para operaciones matemáticas avanzadas y manejo eficiente de arreglos.
+                    # Es útil para:
+                    # - Crear y manipular vectores (individuos).
+                    # - Realizar cálculos matemáticos como suma, producto, etc.
+                    # - Aplicar restricciones a los valores de los genes (np.clip).
+
+from operator import itemgetter  # Permite acceder a elementos específicos de tuplas o listas.
+                                 # Es utilizado para:
+                                 # - Seleccionar el mejor individuo basado en su fitness.
+                                 # - Ordenar o filtrar individuos según su valor de fitness.
+
+from math import sin, cos  # Proporciona funciones trigonométricas como seno y coseno.
+                           # Estas funciones son útiles para definir funciones objetivo complejas
+                           # que dependen de relaciones trigonométricas.
 
 class AlgoritmoGenetico:
     def __init__(self, funcion_objetivo, tamano_poblacion=50, 

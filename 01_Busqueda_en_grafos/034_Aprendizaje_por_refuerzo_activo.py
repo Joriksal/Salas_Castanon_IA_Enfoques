@@ -1,6 +1,18 @@
-import numpy as np
-from collections import defaultdict
-import random
+import numpy as np  # Librería para operaciones matemáticas y manejo de valores numéricos.
+                    # Es útil para:
+                    # - Crear y manipular arreglos y realizar cálculos matemáticos avanzados.
+                    # - Encontrar valores máximos y mínimos (np.max, np.argmax).
+                    # - Manejar valores infinitos (np.inf) y realizar comparaciones numéricas.
+
+from collections import defaultdict  # Proporciona un diccionario con valores por defecto.
+                                     # Es útil para:
+                                     # - Crear una Q-table donde cada estado tiene un array de valores Q inicializados en 0.
+                                     # - Evitar errores al acceder a claves inexistentes en el diccionario.
+
+import random  # Se utiliza para generar números aleatorios.
+               # Es útil para:
+               # - Implementar la política ε-greedy seleccionando acciones aleatorias.
+               # - Inicializar estados y acciones aleatorias en el entorno.
 
 class ActiveRLAgent:
     def __init__(self, env, alpha=0.1, gamma=0.99, epsilon=0.1):

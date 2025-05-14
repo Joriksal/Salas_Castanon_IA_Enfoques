@@ -1,5 +1,5 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import numpy as np  # Para realizar operaciones matemáticas y manejo de arreglos de manera eficiente.
+import matplotlib.pyplot as plt  # Para graficar datos y visualizar la frontera de decisión.
 
 # Datos de entrenamiento: Compuerta AND (x1, x2, etiqueta)
 # Cada fila de X representa una entrada (x1, x2) y y contiene la salida esperada.

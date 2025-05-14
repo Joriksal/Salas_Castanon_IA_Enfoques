@@ -1,6 +1,19 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy.stats import norm, multivariate_normal
+import numpy as np  # Librería para operaciones matemáticas y manejo de arreglos numéricos.
+                    # Es útil para:
+                    # - Representar las partículas y sus pesos como arreglos.
+                    # - Realizar cálculos eficientes con operaciones vectorizadas.
+                    # - Generar ruido aleatorio para simular movimiento y mediciones.
+
+import matplotlib.pyplot as plt  # Librería para la visualización de datos.
+                                 # Es útil para:
+                                 # - Graficar posiciones reales, mediciones ruidosas y estimaciones del filtro de partículas.
+                                 # - Comparar visualmente los resultados del modelo con los datos simulados.
+                                 # - Personalizar gráficos (títulos, etiquetas, leyendas, cuadrículas, etc.).
+
+from scipy.stats import norm  # Proporciona herramientas para trabajar con distribuciones estadísticas.
+                              # Es útil para:
+                              # - Calcular la probabilidad de las partículas dado el valor medido (PDF de la distribución normal).
+                              # - Modelar el ruido del sensor como una distribución normal.
 
 class ParticleFilter:
     def __init__(self, num_particles, motion_noise, sensor_noise):

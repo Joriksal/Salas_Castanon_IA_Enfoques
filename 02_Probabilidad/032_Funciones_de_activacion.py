@@ -1,6 +1,6 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.datasets import make_moons
+import numpy as np  # Para realizar operaciones matemáticas avanzadas y manejo eficiente de arreglos multidimensionales.
+import matplotlib.pyplot as plt  # Para crear gráficos y visualizar datos, como fronteras de decisión y pérdidas.
+from sklearn.datasets import make_moons  # Para generar conjuntos de datos no lineales con forma de luna, útiles para problemas de clasificación.
 
 # 1. Generar datos no lineales (en forma de luna)
 # Se generan 300 puntos con ruido, distribuidos en dos clases con forma de luna.

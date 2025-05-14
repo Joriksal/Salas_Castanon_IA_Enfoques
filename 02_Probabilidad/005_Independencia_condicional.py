@@ -1,5 +1,12 @@
-from collections import defaultdict
-import math
+from collections import defaultdict  # Proporciona un diccionario con valores por defecto.
+                                     # Es útil para:
+                                     # - Contar ocurrencias de clases, palabras y palabras por clase.
+                                     # - Evitar errores al acceder a claves inexistentes, ya que devuelve un valor predeterminado (en este caso, 0 o un diccionario vacío).
+
+import math  # Proporciona funciones matemáticas avanzadas.
+             # Es útil para:
+             # - Calcular logaritmos (math.log) para evitar underflow en multiplicaciones de probabilidades.
+             # - Realizar operaciones exponenciales (math.exp) al convertir log-probabilidades en probabilidades normales.
 
 class NaiveBayesClassifier:
     def __init__(self):

@@ -1,4 +1,8 @@
 import numpy as np  # Librería para operaciones matemáticas y manejo de valores numéricos.
+                    # Es útil para:
+                    # - Realizar cálculos matemáticos avanzados.
+                    # - Manejar estructuras como arreglos y matrices.
+                    # - Trabajar con valores infinitos (np.inf) y realizar comparaciones numéricas.
 
 class MDP:
     def __init__(self, estados, acciones, recompensas, transiciones, gamma=0.9):
